@@ -18,9 +18,10 @@ const SubscribersFooter = ({
     <Box className='subscribers-footer'>
       <Pagination
         count={20}
-        siblingCount={0}
+        siblingCount={2}
         variant='outlined'
         sx={{ m: '0 auto' }}
+        size='small'
         onChange={(_, value) => handlePaginationDataChange({
           target: {
             name: 'pageNumber',

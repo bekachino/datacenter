@@ -5,34 +5,39 @@ import {
   LinearProgress,
   Paper,
   Snackbar,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Tabs,
   TextField
 } from "@mui/material";
-import { getSquares, getSubscribers } from "../../features/dataThunk";
+import {
+  getResolutions, getSquares, getTemplates, getWorks, getWorkStatuses
+} from "../../features/dataThunk";
 import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
-import './subscribers.css';
+import '../Subscribers/subscribers.css';
 
-const Subscribers = () => {
+const Works = () => {
   const dispatch = useAppDispatch();
   const {
-    subscribers,
-    subscribersLoading,
-    subscribersErrorMessage,
+    works,
+    worksLoading,
+    worksErrorMessage,
     squares,
     squaresLoading,
     squaresErrorMessage,
+    templates,
+    templatesErrorMessage,
+    resolutions,
+    resolutionsErrorMessage,
+    statuses,
+    statusesErrorMessage,
   } = useAppSelector(state => state.dataState);
-  const [currentTab, setCurrentTab] = useState('total');
   const [searchWord, setSearchWord] = useState('');
   const [searchSquare, setSearchSquare] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
@@ -43,31 +48,33 @@ const Subscribers = () => {
   
   useEffect(() => {
     dispatch(getSquares());
+    dispatch(getTemplates());
+    dispatch(getResolutions());
+    dispatch(getWorkStatuses());
   }, [dispatch]);
   
   useEffect(() => {
-    dispatch(getSubscribers({
-      type: currentTab,
+    dispatch(getWorks({
       square: searchSquare,
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
     }));
   }, [
     dispatch,
-    currentTab,
     searchSquare,
     paginationData?.pageSize,
     paginationData?.pageNumber
   ]);
   
   useEffect(() => {
-    if (!!subscribersErrorMessage || !!squaresErrorMessage) setSnackBarOpen(true);
+    if (!!worksErrorMessage || !!squaresErrorMessage || !!templatesErrorMessage || !!resolutionsErrorMessage || !!statusesErrorMessage) setSnackBarOpen(true);
   }, [
     squaresErrorMessage,
-    subscribersErrorMessage
+    templatesErrorMessage,
+    worksErrorMessage,
+    resolutionsErrorMessage,
+    statusesErrorMessage,
   ]);
-  
-  const onTabChange = value => setCurrentTab(value);
   
   const handlePaginationDataChange = (e) => {
     const {
@@ -82,10 +89,10 @@ const Subscribers = () => {
     ));
   };
   
-  const subscribersBySearchWord = useCallback(() => {
-    return subscribers?.filter(subscriber => subscriber?.name_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.address?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.ls_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.phone_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.tariff?.toLowerCase()?.includes(searchWord?.toLowerCase()));
+  const worksBySearchWord = useCallback(() => {
+    return works?.filter(subscriber => subscriber?.created_at?.toLowerCase()?.includes(searchWord?.toLowerCase()));
   }, [
-    subscribers,
+    works,
     searchWord
   ]);
   
@@ -126,24 +133,6 @@ const Subscribers = () => {
             />}
         />
       </Box>
-      <Tabs
-        className='subscribers-tabs'
-        value={currentTab}
-        onChange={(_, value) => onTabChange(value)}
-      >
-        <Tab
-          value='total'
-          label='ОАБ'
-        />
-        <Tab
-          value='active'
-          label='ААБ'
-        />
-        <Tab
-          value='nonactive'
-          label='НАБ'
-        />
-      </Tabs>
       <TableContainer
         component={Paper}
         className='table-container'
@@ -155,7 +144,7 @@ const Subscribers = () => {
           aria-label='simple table'
         >
           <TableHead sx={{ position: 'relative' }}>
-            {subscribersLoading && <LinearProgress
+            {worksLoading && <LinearProgress
               color='inherit'
               className='subscribers-progress-bar'
             />}
@@ -163,70 +152,47 @@ const Subscribers = () => {
               <TableCell
                 align='center'
                 sx={{ minWidth: '180px' }}
-              >ФИО абонента</TableCell>
+              >Шаблон</TableCell>
               <TableCell
                 align='center'
                 sx={{ minWidth: '150px' }}
-              >Номер телефона</TableCell>
+              >Резолюция</TableCell>
               <TableCell
                 align='center'
                 sx={{ minWidth: '250px' }}
-              >Адрес</TableCell>
+              >Статус работы</TableCell>
               <TableCell
                 align='center'
                 sx={{ minWidth: '130px' }}
-              >ЛС абонента</TableCell>
+              >Наряд</TableCell>
               <TableCell
                 align='center'
                 sx={{ minWidth: '180px' }}
-              >Квадат</TableCell>
-              <TableCell
-                align='center'
-                sx={{ minWidth: '105px' }}
               >Создан</TableCell>
               <TableCell
                 align='center'
-                sx={{ minWidth: '150px' }}
-              >Тариф</TableCell>
-              <TableCell
-                align='center'
-                sx={{ minWidth: '110px' }}
-              >Баланс</TableCell>
-              <TableCell
-                align='center'
-                sx={{ minWidth: '170px' }}
-              >Последний платёж</TableCell>
+                sx={{ minWidth: '105px' }}
+              >Закрыт</TableCell>
               <TableCell
                 align='center'
                 sx={{ minWidth: '150px' }}
-              >IP адрес</TableCell>
+              >Квадрат</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {(
-              subscribersBySearchWord() || []
+              worksBySearchWord() || []
             )?.map((row) => (
               <TableRow
                 key={row.id}
               >
-                <TableCell align='center'>{row?.name_abon || '-'}</TableCell>
-                <TableCell align='center'>{row?.phone_abon || '-'}</TableCell>
-                <TableCell align='center'>{row?.address || '-'}</TableCell>
-                <TableCell align='center'>{row?.ls_abon || '-'}</TableCell>
-                <TableCell align='center'>{squares?.find(square => square?.id === row?.squares_id)?.squares || '-'}</TableCell>
+                <TableCell align='center'>{templates?.find(template => template?.id === row?.templates_tip_id)?.name || '-'}</TableCell>
+                <TableCell align='center'>{resolutions?.find(resolution => resolution?.id === row?.resolution_work_id)?.name || '-'}</TableCell>
+                <TableCell align='center'>{statuses?.find(status => status?.id === row?.status_work_id)?.name || '-'}</TableCell>
+                <TableCell align='center'>{row?.worker_id || '-'}</TableCell>
                 <TableCell align='center'>{row?.created_at ? formatDate(row?.created_at) : '-'}</TableCell>
-                <TableCell align='center'>{row?.tariff || '-'}</TableCell>
-                <TableCell align='center'>
-                  {row?.balance ? <>{row?.balance}
-                    <strong
-                      style={{
-                        textDecoration: 'underline',
-                        marginLeft: '4px'
-                      }}
-                    >c</strong></> : '-'}
-                </TableCell>
-                <TableCell align='center'>{row?.last_pay || '-'}</TableCell>
-                <TableCell align='center'>{row?.ip_address || '-'}</TableCell>
+                <TableCell align='center'>{row?.closed_at ? formatDate(row?.closed_at) : '-'}</TableCell>
+                <TableCell align='center'>{squares?.find(square => square?.id === row?.squares)?.squares || '-'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -243,7 +209,7 @@ const Subscribers = () => {
         }}
         open={snackBarOpen}
         onClose={handleSnackBarClose}
-        message={subscribersErrorMessage || squaresErrorMessage}
+        message={worksErrorMessage || squaresErrorMessage || templatesErrorMessage || resolutionsErrorMessage || statusesErrorMessage}
         sx={{
           '.MuiSnackbarContent-root': {
             backgroundColor: '#121212',
@@ -255,4 +221,4 @@ const Subscribers = () => {
   );
 };
 
-export default Subscribers;
+export default Works;
