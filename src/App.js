@@ -1,26 +1,27 @@
-import { useAppSelector } from "./app/hooks";
 import { Navigate, Route, Routes } from "react-router-dom";
 import UserToolbar from "./components/Toolbar/UserToolbar";
+import { Suspense } from "react";
+import Subscribers from "./containers/Subscribers/Subscribers";
 import './App.css';
 
 const App = () => {
-  const { user } = useAppSelector((state) => state.userState);
+  //const { user } = useAppSelector((state) => state.userState);
   
   const publicRoutes = (
     <>
+      <Route
+        path='subscribers'
+        element={<Suspense fallback={<></>}>
+          <Subscribers/>
+        </Suspense>}
+      />
     </>
   );
   
-  const privateRoutes = (
-    <>
-      {/*<Route*/}
-      {/*  path='my-applications'*/}
-      {/*  element={<Suspense fallback={<></>}>*/}
-      {/*    <MyApplications/>*/}
-      {/*  </Suspense>}*/}
-      {/*/>*/}
-    </>
-  );
+  //const privateRoutes = (
+  //  <>
+  //  </>
+  //);
   
   return (
     <div className='App'>
@@ -33,7 +34,7 @@ const App = () => {
             replace
           />}
         />
-        {user ? privateRoutes : publicRoutes}
+        {publicRoutes}
       </Routes>
     </div>
   );
