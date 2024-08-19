@@ -1,14 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+const initialState = {
+  currentDrawer: '',
+};
 
 const DataSlice = createSlice({
   name: 'data',
   initialState,
-  reducers: {},
+  reducers: {
+    setDrawer: (state, action) => {
+      state.currentDrawer = action.payload;
+    },
+  },
   extraReducers: (builder) => {
   },
 });
 
 export const dataReducer = DataSlice.reducer;
-//export const {} = DataSlice.actions;
+export const {
+  setDrawer,
+} = DataSlice.actions;

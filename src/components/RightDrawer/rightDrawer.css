@@ -1,0 +1,47 @@
+.right-drawer-list {
+  min-width: 300px;
+}
+
+.right-drawer-logout-btn {
+  margin-top: 20px;
+}
+
+.right-drawer-avatar {
+  width: 46px!important;
+  height: 46px!important;
+}
+
+@media (max-width: 500px) {
+  .right-drawer-list {
+    min-width: 240px;
+  }
+  
+  .right-drawer .css-2ulfj5-MuiTypography-root {
+    font-size: 16px;
+  }
+  
+  .right-drawer-avatar {
+    width: 38px!important;
+    height: 38px!important;
+  }
+  
+  .right-drawer .css-16ac5r2-MuiButtonBase-root-MuiListItemButton-root {
+    padding: 5px 12px!important;
+  }
+  
+  .right-drawer li span {
+    font-size: 12px;
+  }
+  
+  .right-drawer .css-cveggr-MuiListItemIcon-root {
+    min-width: 35px!important;
+  }
+  
+  .right-drawer .css-ky21j9-MuiButtonBase-root-MuiButton-root {
+    font-size: 10px;
+  }
+  
+  .right-drawer-logout-btn {
+    margin-top: 10px;
+  }
+}

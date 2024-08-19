@@ -1,5 +1,6 @@
 import { useAppSelector } from "./app/hooks";
 import { Navigate, Route, Routes } from "react-router-dom";
+import UserToolbar from "./components/Toolbar/UserToolbar";
 import './App.css';
 
 const App = () => {
@@ -23,11 +24,12 @@ const App = () => {
   
   return (
     <div className='App'>
+      <UserToolbar/>
       <Routes>
         <Route
           path='*'
           element={<Navigate
-            to='/'
+            to='/subscribers'
             replace
           />}
         />
