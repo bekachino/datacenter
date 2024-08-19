@@ -1,7 +1,7 @@
 .subscribers {
   display: flex;
   flex-direction: column;
-  padding: 15px 10px;
+  padding: 15px 10px 0;
 }
 
 .subscribers-tabs button {

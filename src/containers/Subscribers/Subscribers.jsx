@@ -53,7 +53,13 @@ const Subscribers = () => {
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
     }));
-  }, [dispatch, currentTab, searchSquare, paginationData?.pageSize, paginationData?.pageNumber]);
+  }, [
+    dispatch,
+    currentTab,
+    searchSquare,
+    paginationData?.pageSize,
+    paginationData?.pageNumber
+  ]);
   
   useEffect(() => {
     if (!!subscribersErrorMessage) setSnackBarOpen(true);
