@@ -5,10 +5,14 @@ const initialState = {
   currentDrawer: '',
   subscribers: [],
   squares: [],
+  works: [],
   subscribersLoading: false,
   squaresLoading: false,
+  worksLoading: false,
   subscribersErrorMessage: '',
   squaresErrorMessage: '',
+  worksErrorMessage: '',
+  
 };
 
 const DataSlice = createSlice({

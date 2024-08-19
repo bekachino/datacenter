@@ -30,6 +30,7 @@ const Subscribers = () => {
     subscribersErrorMessage,
     squares,
     squaresLoading,
+    squaresErrorMessage,
   } = useAppSelector(state => state.dataState);
   const [currentTab, setCurrentTab] = useState('total');
   const [searchWord, setSearchWord] = useState('');
@@ -62,8 +63,11 @@ const Subscribers = () => {
   ]);
   
   useEffect(() => {
-    if (!!subscribersErrorMessage) setSnackBarOpen(true);
-  }, [subscribersErrorMessage]);
+    if (!!subscribersErrorMessage || !!squaresErrorMessage) setSnackBarOpen(true);
+  }, [
+    squaresErrorMessage,
+    subscribersErrorMessage
+  ]);
   
   const onTabChange = value => setCurrentTab(value);
   
@@ -242,7 +246,7 @@ const Subscribers = () => {
         }}
         open={snackBarOpen}
         onClose={handleSnackBarClose}
-        message={subscribersErrorMessage}
+        message={subscribersErrorMessage || squaresErrorMessage}
         sx={{
           '.MuiSnackbarContent-root': {
             backgroundColor: '#121212',

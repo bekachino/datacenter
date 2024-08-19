@@ -9,7 +9,7 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   limit,
 }, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${square ? `squares_id=${square}` : ''}`);
+    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${square ? `&squares_id=${square}` : ''}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue(SMTH_WENT_WRONG);
@@ -19,6 +19,20 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
 export const getSquares = createAsyncThunk('data/getSquares', async (_, { rejectWithValue }) => {
   try {
     const req = await axiosApi(`squares/`);
+    return await req.data || [];
+  } catch (e) {
+    rejectWithValue(SMTH_WENT_WRONG);
+  }
+});
+
+export const getWorks = createAsyncThunk('data/getWorks', async ({
+  type,
+  square,
+  skip,
+  limit,
+}, { rejectWithValue }) => {
+  try {
+    const req = await axiosApi(`work/?skip=${skip || 1}&limit=${limit || 100}${square ? `&squares_id=${square}` : ''}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue(SMTH_WENT_WRONG);
