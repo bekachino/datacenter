@@ -4,10 +4,12 @@ import { SMTH_WENT_WRONG } from "../constants";
 
 export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   type,
-  square
+  square,
+  skip,
+  limit,
 }, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`${type}_subscriber_base/${square ? `?squares_id=${square}` : ''}`);
+    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${square ? `squares_id=${square}` : ''}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue(SMTH_WENT_WRONG);

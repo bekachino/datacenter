@@ -19,7 +19,7 @@ const UserToolbar = () => {
   const dispatch = useAppDispatch();
   
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, position: 'sticky', top: '0', zIndex: '999' }}>
       <AppBar position='static'>
         <Toolbar>
           <Typography

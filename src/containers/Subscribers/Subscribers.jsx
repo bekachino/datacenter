@@ -19,6 +19,8 @@ import {
 import { getSquares, getSubscribers } from "../../features/dataThunk";
 import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
+import SubscribersFooter
+  from "../../components/SubscribersFooter/SubscribersFooter";
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +35,12 @@ const Subscribers = () => {
   const [searchWord, setSearchWord] = useState('');
   const [searchSquare, setSearchSquare] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [paginationData, setPaginationData] = useState({
+    pageSize: 100,
+    pageNumber: 1,
+  });
+  
+  console.log(paginationData);
   
   useEffect(() => {
     dispatch(getSquares());
@@ -42,18 +50,29 @@ const Subscribers = () => {
     dispatch(getSubscribers({
       type: currentTab,
       square: searchSquare,
+      skip: paginationData?.pageNumber,
+      limit: paginationData?.pageSize,
     }));
-  }, [
-    dispatch,
-    currentTab,
-    searchSquare
-  ]);
+  }, [dispatch, currentTab, searchSquare, paginationData?.pageSize, paginationData?.pageNumber]);
   
   useEffect(() => {
     if (!!subscribersErrorMessage) setSnackBarOpen(true);
   }, [subscribersErrorMessage]);
   
   const onTabChange = value => setCurrentTab(value);
+  
+  const handlePaginationDataChange = (e) => {
+    const {
+      name,
+      value
+    } = e.target;
+    setPaginationData(prevState => (
+      {
+        ...prevState,
+        [name]: value,
+      }
+    ));
+  };
   
   const subscribersBySearchWord = useCallback(() => {
     return subscribers?.filter(subscriber => subscriber?.name_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.address?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.ls_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.phone_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.tariff?.toLowerCase()?.includes(searchWord?.toLowerCase()));
@@ -205,6 +224,10 @@ const Subscribers = () => {
             ))}
           </TableBody>
         </Table>
+        <SubscribersFooter
+          paginationData={paginationData}
+          handlePaginationDataChange={handlePaginationDataChange}
+        />
       </TableContainer>
       <Snackbar
         anchorOrigin={{
