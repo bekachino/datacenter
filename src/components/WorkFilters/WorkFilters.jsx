@@ -58,7 +58,7 @@ const WorkFilters = ({
                 label='Создан (начало даты)'
                 format='DD/MM/YYYY'
                 sx={{ flexGrow: 1 }}
-                value={!!filterWorksDates?.created_at_from ? dayjs(filterWorksDates?.created_at_from) : null}
+                value={!!filterWorksDates?.created_at_from ? dayjs(filterWorksDates?.created_at_from, 'DD.MM.YYYY') : null}
                 onChange={value => handleFilterWorksDatesChange({
                   target: {
                     name: 'created_at_from',
@@ -73,7 +73,7 @@ const WorkFilters = ({
                   flexGrow: 1,
                   mt: '10px!important'
                 }}
-                value={!!filterWorksDates?.created_at_to ? dayjs(filterWorksDates?.created_at_to) : null}
+                value={!!filterWorksDates?.created_at_to ? dayjs(filterWorksDates?.created_at_to, 'DD.MM.YYYY') : null}
                 onChange={value => handleFilterWorksDatesChange({
                   target: {
                     name: 'created_at_to',
@@ -94,7 +94,7 @@ const WorkFilters = ({
                 label='Закрыт (начало даты)'
                 format='DD/MM/YYYY'
                 sx={{ flexGrow: 1 }}
-                value={!!filterWorksDates?.closed_at_from ? dayjs(filterWorksDates?.closed_at_from) : null}
+                value={!!filterWorksDates?.closed_at_from ? dayjs(filterWorksDates?.closed_at_from, 'DD.MM.YYYY') : null}
                 onChange={value => handleFilterWorksDatesChange({
                   target: {
                     name: 'closed_at_from',
@@ -109,7 +109,7 @@ const WorkFilters = ({
                   flexGrow: 1,
                   mt: '10px!important'
                 }}
-                value={!!filterWorksDates?.closed_at_to ? dayjs(filterWorksDates?.closed_at_to) : null}
+                value={!!filterWorksDates?.closed_at_to ? dayjs(filterWorksDates?.closed_at_to, 'DD.MM.YYYY') : null}
                 onChange={value => handleFilterWorksDatesChange({
                   target: {
                     name: 'closed_at_to',

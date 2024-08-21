@@ -8,7 +8,9 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   limit,
 }, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${square ? `&squares_id=${square}` : ''}`);
+    const squaresQuery = square ? `&squares_id=${square}` : '';
+    
+    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue('Ошибка при получении абонентов');
@@ -28,9 +30,17 @@ export const getWorks = createAsyncThunk('data/getWorks', async ({
   square,
   skip,
   limit,
+  created_at_from,
+  created_at_to,
+  closed_at_from,
+  closed_at_to,
 }, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`work/?skip=${skip || 1}&limit=${limit || 100}${square ? `&squares_id=${square}` : ''}`);
+    const squaresQuery = square ? `&squares_id=${square}` : '';
+    const createdQuery = created_at_from ? `&created_at_from=${created_at_from}&created_at_to=${created_at_to}` : '';
+    const closedQuery = closed_at_from ? `&closed_at_from=${closed_at_from}&closed_at_to=${closed_at_to}` : '';
+    
+    const req = await axiosApi(`work/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}${createdQuery}${!!createdQuery ? closedQuery : ''}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue('Ошибка при получении нарядов');

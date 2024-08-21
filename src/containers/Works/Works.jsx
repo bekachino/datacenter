@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
-  Autocomplete,
   Button,
   LinearProgress,
   Paper,
@@ -15,14 +14,18 @@ import {
   TextField
 } from "@mui/material";
 import {
-  getResolutions, getSquares, getTemplates, getWorks, getWorkStatuses
+  getResolutions,
+  getSquares,
+  getTemplates,
+  getWorks,
+  getWorkStatuses
 } from "../../features/dataThunk";
-import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
 import '../Subscribers/subscribers.css';
 import WorkFilters from "../../components/WorkFilters/WorkFilters";
+import dayjs from "dayjs";
 
 const Works = () => {
   const dispatch = useAppDispatch();
@@ -87,8 +90,8 @@ const Works = () => {
         resolution_work: resolutions?.find(resolution => resolution?.id === work?.resolution_work_id),
         status_work: statuses?.find(status => status?.id === work?.status_work_id),
         square: squares?.find(square => square?.id === work?.squares),
-        created_at: formatDate(work?.created_at),
-        closed_at: formatDate(work?.closed_at),
+        created_at: dayjs(work?.created_at).format('DD.MM.YYYY hh:mm'),
+        closed_at: dayjs(work?.closed_at).format('DD.MM.YYYY hh:mm'),
       }
     ));
     setReformattedWorks(reformattedWorks);
@@ -104,9 +107,9 @@ const Works = () => {
     handleWorkFiltersClose();
     dispatch(getWorks({
       created_at_from: filterWorksDates?.created_at_from,
-      created_at_to: filterWorksDates?.created_at_to || formatDate(new Date(), true),
+      created_at_to: filterWorksDates?.created_at_to || dayjs().format('DD.MM.YYYY'),
       closed_at_from: filterWorksDates?.closed_at_from,
-      closed_at_to: filterWorksDates?.closed_at_to || formatDate(new Date(), true),
+      closed_at_to: filterWorksDates?.closed_at_to || dayjs().format('DD.MM.YYYY'),
       square: searchSquare,
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
@@ -135,7 +138,7 @@ const Works = () => {
     setFilterWorksDates(prevState => (
       {
         ...prevState,
-        [name]: formatDate(value, true),
+        [name]: dayjs(value).format('DD.MM.YYYY'),
       }
     ));
   };
