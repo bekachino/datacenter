@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   Autocomplete,
+  Button,
   LinearProgress,
   Paper,
   Snackbar,
@@ -21,6 +22,7 @@ import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
 import '../Subscribers/subscribers.css';
+import WorkFilters from "../../components/WorkFilters/WorkFilters";
 
 const Works = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +43,7 @@ const Works = () => {
   const [searchWord, setSearchWord] = useState('');
   const [searchSquare, setSearchSquare] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [workFiltersOpen, setWorkFiltersOpen] = useState(false);
   const [paginationData, setPaginationData] = useState({
     pageSize: 100,
     pageNumber: 1,
@@ -55,13 +58,11 @@ const Works = () => {
   
   useEffect(() => {
     dispatch(getWorks({
-      square: searchSquare,
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
     }));
   }, [
     dispatch,
-    searchSquare,
     paginationData?.pageSize,
     paginationData?.pageNumber
   ]);
@@ -75,6 +76,15 @@ const Works = () => {
     resolutionsErrorMessage,
     statusesErrorMessage,
   ]);
+  
+  const getFilteredWorks = () => {
+    handleWorkFiltersClose();
+    dispatch(getWorks({
+      square: searchSquare,
+      skip: paginationData?.pageNumber,
+      limit: paginationData?.pageSize,
+    }));
+  };
   
   const handlePaginationDataChange = (e) => {
     const {
@@ -100,6 +110,12 @@ const Works = () => {
     setSnackBarOpen(false);
   };
   
+  const handleWorkFiltersClose = () => {
+    setWorkFiltersOpen(false);
+  };
+  
+  const onSearchSquareEdit = (value) => setSearchSquare(squares?.find(square => square?.squares === value)?.id);
+  
   return (
     <div className='subscribers'>
       <Box
@@ -121,17 +137,12 @@ const Works = () => {
             flexGrow: 1,
           }}
         />
-        <Autocomplete
-          value={squares?.find(square => square?.id === searchSquare)?.squares || ''}
-          onChange={(_, value) => setSearchSquare(squares?.find(square => square?.squares === value)?.id)}
-          options={squares?.map(square => square?.squares) || []}
-          loading={squaresLoading}
-          loadingText='Загрузка...'
-          renderInput={(params) =>
-            <TextField {...params} label='Фильтр по квадрату'
-              size='small'
-            />}
-        />
+        <Button
+          color='secondary'
+          sx={{ mr: 'auto' }}
+          variant='outlined'
+          onClick={() => setWorkFiltersOpen(true)}
+        >Фильтры...</Button>
       </Box>
       <TableContainer
         component={Paper}
@@ -216,6 +227,15 @@ const Works = () => {
             color: 'white',
           },
         }}
+      />
+      <WorkFilters
+        open={workFiltersOpen}
+        handleClose={handleWorkFiltersClose}
+        searchSquareValue={squares?.find(square => square?.id === searchSquare)?.squares || ''}
+        searchSquareOptions={squares?.map(square => square?.squares) || []}
+        onSearchSquareEdit={onSearchSquareEdit}
+        squaresLoading={squaresLoading}
+        getFilteredWorks={getFilteredWorks}
       />
     </div>
   );
