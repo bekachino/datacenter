@@ -48,6 +48,8 @@ const Works = () => {
     pageSize: 100,
     pageNumber: 1,
   });
+  const [reformattedWorks, setReformattedWorks] = useState([]);
+  const [filterWorksDates, setFilterWorksDates] = useState(null);
   
   useEffect(() => {
     dispatch(getSquares());
@@ -77,9 +79,34 @@ const Works = () => {
     statusesErrorMessage,
   ]);
   
+  useEffect(() => {
+    const reformattedWorks = works?.map(work => (
+      {
+        ...work,
+        templates_tip: templates?.find(template => template?.id === work?.templates_tip_id),
+        resolution_work: resolutions?.find(resolution => resolution?.id === work?.resolution_work_id),
+        status_work: statuses?.find(status => status?.id === work?.status_work_id),
+        square: squares?.find(square => square?.id === work?.squares),
+        created_at: formatDate(work?.created_at),
+        closed_at: formatDate(work?.closed_at),
+      }
+    ));
+    setReformattedWorks(reformattedWorks);
+  }, [
+    resolutions,
+    squares,
+    statuses,
+    templates,
+    works,
+  ]);
+  
   const getFilteredWorks = () => {
     handleWorkFiltersClose();
     dispatch(getWorks({
+      created_at_from: filterWorksDates?.created_at_from,
+      created_at_to: filterWorksDates?.created_at_to || formatDate(new Date(), true),
+      closed_at_from: filterWorksDates?.closed_at_from,
+      closed_at_to: filterWorksDates?.closed_at_to || formatDate(new Date(), true),
       square: searchSquare,
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
@@ -99,10 +126,24 @@ const Works = () => {
     ));
   };
   
+  const handleFilterWorksDatesChange = (e) => {
+    const {
+      name,
+      value
+    } = e.target;
+    if (!value) return;
+    setFilterWorksDates(prevState => (
+      {
+        ...prevState,
+        [name]: formatDate(value, true),
+      }
+    ));
+  };
+  
   const worksBySearchWord = useCallback(() => {
-    return works?.filter(subscriber => subscriber?.created_at?.toLowerCase()?.includes(searchWord?.toLowerCase()));
+    return reformattedWorks?.filter(subscriber => subscriber?.created_at?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.closed_at?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.templates_tip?.name?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.resolution_work?.name?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.status_work?.name?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.square?.squares?.toLowerCase()?.includes(searchWord?.toLowerCase()));
   }, [
-    works,
+    reformattedWorks,
     searchWord
   ]);
   
@@ -139,9 +180,13 @@ const Works = () => {
         />
         <Button
           color='secondary'
-          sx={{ mr: 'auto' }}
+          sx={{
+            ml: 'auto',
+            minWidth: '250px'
+          }}
           variant='outlined'
           onClick={() => setWorkFiltersOpen(true)}
+          size='small'
         >Фильтры...</Button>
       </Box>
       <TableContainer
@@ -174,15 +219,15 @@ const Works = () => {
               >Статус работы</TableCell>
               <TableCell
                 align='center'
-                sx={{ minWidth: '130px' }}
-              >Наряд</TableCell>
+                sx={{ minWidth: '150px' }}
+              >Сервис инженер</TableCell>
               <TableCell
                 align='center'
-                sx={{ minWidth: '180px' }}
+                sx={{ minWidth: '160px' }}
               >Создан</TableCell>
               <TableCell
                 align='center'
-                sx={{ minWidth: '105px' }}
+                sx={{ minWidth: '160px' }}
               >Закрыт</TableCell>
               <TableCell
                 align='center'
@@ -197,13 +242,13 @@ const Works = () => {
               <TableRow
                 key={row.id}
               >
-                <TableCell align='center'>{templates?.find(template => template?.id === row?.templates_tip_id)?.name || '-'}</TableCell>
-                <TableCell align='center'>{resolutions?.find(resolution => resolution?.id === row?.resolution_work_id)?.name || '-'}</TableCell>
-                <TableCell align='center'>{statuses?.find(status => status?.id === row?.status_work_id)?.name || '-'}</TableCell>
+                <TableCell align='center'>{row?.templates_tip?.name || '-'}</TableCell>
+                <TableCell align='center'>{row?.resolution_work?.name || '-'}</TableCell>
+                <TableCell align='center'>{row?.status_work?.name || '-'}</TableCell>
                 <TableCell align='center'>{row?.worker_id || '-'}</TableCell>
-                <TableCell align='center'>{row?.created_at ? formatDate(row?.created_at) : '-'}</TableCell>
-                <TableCell align='center'>{row?.closed_at ? formatDate(row?.closed_at) : '-'}</TableCell>
-                <TableCell align='center'>{squares?.find(square => square?.id === row?.squares)?.squares || '-'}</TableCell>
+                <TableCell align='center'>{row?.created_at || '-'}</TableCell>
+                <TableCell align='center'>{row?.closed_at || '-'}</TableCell>
+                <TableCell align='center'>{row?.square?.squares || '-'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -236,6 +281,8 @@ const Works = () => {
         onSearchSquareEdit={onSearchSquareEdit}
         squaresLoading={squaresLoading}
         getFilteredWorks={getFilteredWorks}
+        handleFilterWorksDatesChange={handleFilterWorksDatesChange}
+        filterWorksDates={filterWorksDates}
       />
     </div>
   );
