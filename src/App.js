@@ -1,8 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import UserToolbar from "./components/Toolbar/UserToolbar";
 import { Suspense } from "react";
-import Works from "./containers/Works/Works";
-import Subscribers from "./containers/Subscribers/Subscribers";
 import './App.css';
 
 const App = () => {
@@ -10,18 +8,18 @@ const App = () => {
   
   const publicRoutes = (
     <>
-      <Route
-        path='subscribers'
-        element={<Suspense fallback={<></>}>
-          <Subscribers/>
-        </Suspense>}
-      />
-      <Route
-        path='works'
-        element={<Suspense fallback={<></>}>
-          <Works/>
-        </Suspense>}
-      />
+      {/*<Route*/}
+      {/*  path='subscribers'*/}
+      {/*  element={<Suspense fallback={<></>}>*/}
+      {/*    <Subscribers/>*/}
+      {/*  </Suspense>}*/}
+      {/*/>*/}
+      {/*<Route*/}
+      {/*  path='works'*/}
+      {/*  element={<Suspense fallback={<></>}>*/}
+      {/*    <Works/>*/}
+      {/*  </Suspense>}*/}
+      {/*/>*/}
     </>
   );
   
