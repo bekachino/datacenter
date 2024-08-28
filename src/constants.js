@@ -7,7 +7,7 @@ export const RU_PATHNAMES = {
   'works': 'Наряды',
 };
 
-export const formatDate = (date, noTime) => {
+export const formatDate = (date, showTime ) => {
   const newDate = new Date(date);
   const pad = (num, size) => num.toString().padStart(size, '0');
   
@@ -17,5 +17,5 @@ export const formatDate = (date, noTime) => {
   const hours = pad(newDate.getHours(), 2);
   const minutes = pad(newDate.getMinutes(), 2);
   
-  return `${day}.${month}.${year}${!noTime ? ` ${hours}:${minutes}` : ''}`;
+  return `${day}.${month}.${year}${showTime ? ` ${hours}:${minutes}` : ''}`;
 };

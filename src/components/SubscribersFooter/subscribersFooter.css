@@ -1,0 +1,19 @@
+.subscribers-footer {
+  position: sticky;
+  left: 0;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+.subscribers-footer-page-size {
+  min-width: 130px!important;
+}
+
+.subscribers-footer ul {
+  height: 100%;
+}
