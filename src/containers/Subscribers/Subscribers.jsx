@@ -35,8 +35,8 @@ const Subscribers = () => {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [paginationData, setPaginationData] = useState({
-    pageSize: 100,
-    pageNumber: 1,
+    skip: 1,
+    limit: 100,
   });
   const [filterData, setFilterData] = useState({
     abonType: 'active'
@@ -45,17 +45,6 @@ const Subscribers = () => {
   useEffect(() => {
     dispatch(getSquares());
   }, [dispatch]);
-  
-  useEffect(() => {
-    dispatch(getSubscribers({
-      skip: paginationData?.pageNumber,
-      limit: paginationData?.pageSize,
-    }));
-  }, [
-    dispatch,
-    paginationData?.pageSize,
-    paginationData?.pageNumber
-  ]);
   
   useEffect(() => {
     if (!!subscribersErrorMessage || !!squaresErrorMessage) setSnackBarOpen(true);
@@ -87,6 +76,10 @@ const Subscribers = () => {
         [name]: value,
       }
     ));
+    dispatch(getSubscribers({
+      ...paginationData,
+      [name]: value
+    }));
   };
   
   const handleFilterDataChange = (e) => {
@@ -109,10 +102,10 @@ const Subscribers = () => {
     searchWord
   ]);
   
-  const getSubscribersByFilters = async () => {
+  const getSubscribersByFilters = async (e) => {
+    e?.preventDefault();
     await dispatch(getSubscribers({
-      skip: paginationData?.pageNumber,
-      limit: paginationData?.pageSize,
+      ...paginationData,
       abonType: filterData.abonType,
       squares_id: filterData.squares_id,
     }));
@@ -233,10 +226,10 @@ const Subscribers = () => {
             ))}
           </TableBody>
         </Table>
-        <SubscribersFooter
+        {!!subscribers.length && <SubscribersFooter
           paginationData={paginationData}
           handlePaginationDataChange={handlePaginationDataChange}
-        />
+        />}
       </TableContainer>
       <Snackbar
         anchorOrigin={{

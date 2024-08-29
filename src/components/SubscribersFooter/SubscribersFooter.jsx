@@ -1,11 +1,6 @@
 import React from 'react';
 import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Pagination,
-  Select
+  Box, FormControl, InputLabel, MenuItem, Pagination, Select
 } from "@mui/material";
 import './subscribersFooter.css';
 
@@ -22,9 +17,10 @@ const SubscribersFooter = ({
         variant='outlined'
         sx={{ m: '0 auto' }}
         size='small'
+        page={paginationData?.skip}
         onChange={(_, value) => handlePaginationDataChange({
           target: {
-            name: 'pageNumber',
+            name: 'skip',
             value: value,
           }
         })}
@@ -37,8 +33,8 @@ const SubscribersFooter = ({
         <Select
           labelId='demo-simple-select-label'
           id='demo-simple-select'
-          name='pageSize'
-          value={paginationData?.pageSize}
+          name='limit'
+          value={paginationData?.limit}
           label='элементов на страницу'
           onChange={handlePaginationDataChange}
           variant='standard'
