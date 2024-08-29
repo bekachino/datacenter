@@ -1,0 +1,19 @@
+.subscribers-filter-modal .MuiDialog-paperScrollPaper {
+  width: 90%;
+  max-width: 500px;
+  margin: 15px;
+}
+
+.abon-type-radio-group {
+  gap: 20px;
+}
+
+.subscribers-filter-modal .MuiDialogActions-root button {
+  flex-grow: 1;
+}
+
+@media (max-width: 380px) {
+  .abon-type-radio-group {
+    gap: 0;
+  }
+}

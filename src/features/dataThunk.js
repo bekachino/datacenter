@@ -2,7 +2,7 @@ import axiosApi from "../axiosApi";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
-  type,
+  abonType = 'active',
   square,
   skip,
   limit,
@@ -10,7 +10,7 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   try {
     const squaresQuery = square ? `&squares_id=${square}` : '';
     
-    const req = await axiosApi(`${type}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}`);
+    const req = await axiosApi(`${abonType}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}`);
     return await req.data || [];
   } catch (e) {
     rejectWithValue('Ошибка при получении абонентов');

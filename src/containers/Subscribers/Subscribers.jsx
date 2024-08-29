@@ -1,17 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
+  Button,
   LinearProgress,
   Paper,
   Snackbar,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Tabs,
   TextField
 } from "@mui/material";
 import { getSquares, getSubscribers } from "../../features/dataThunk";
@@ -20,6 +19,8 @@ import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
 import './subscribers.css';
+import SubscribersFilterModal
+  from "../../components/SubscribersFilterModal/SubscribersFilterModal";
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
@@ -31,12 +32,15 @@ const Subscribers = () => {
     squaresLoading,
     squaresErrorMessage,
   } = useAppSelector(state => state.dataState);
-  const [currentTab, setCurrentTab] = useState('total');
   const [searchWord, setSearchWord] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [paginationData, setPaginationData] = useState({
     pageSize: 100,
     pageNumber: 1,
+  });
+  const [filterData, setFilterData] = useState({
+    abonType: 'active'
   });
   
   useEffect(() => {
@@ -45,13 +49,11 @@ const Subscribers = () => {
   
   useEffect(() => {
     dispatch(getSubscribers({
-      type: currentTab,
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
     }));
   }, [
     dispatch,
-    currentTab,
     paginationData?.pageSize,
     paginationData?.pageNumber
   ]);
@@ -63,7 +65,17 @@ const Subscribers = () => {
     subscribersErrorMessage
   ]);
   
-  const onTabChange = value => setCurrentTab(value);
+  const handleSnackBarClose = () => {
+    setSnackBarOpen(false);
+  };
+  
+  const handleFilterModalOpen = () => {
+    setFilterModalOpen(true);
+  };
+  
+  const handleFilterModalClose = () => {
+    setFilterModalOpen(false);
+  };
   
   const handlePaginationDataChange = (e) => {
     const {
@@ -78,6 +90,19 @@ const Subscribers = () => {
     ));
   };
   
+  const handleFilterDataChange = (e) => {
+    const {
+      name,
+      value
+    } = e.target;
+    setFilterData(prevState => (
+      {
+        ...prevState,
+        [name]: value,
+      }
+    ));
+  };
+  
   const subscribersBySearchWord = useCallback(() => {
     return subscribers?.filter(subscriber => subscriber?.name_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.address?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.ls_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.phone_abon?.toLowerCase()?.includes(searchWord?.toLowerCase()) || subscriber?.tariff?.toLowerCase()?.includes(searchWord?.toLowerCase()));
   }, [
@@ -85,8 +110,13 @@ const Subscribers = () => {
     searchWord
   ]);
   
-  const handleSnackBarClose = () => {
-    setSnackBarOpen(false);
+  const getSubscribersByFilters = async () => {
+    await dispatch(getSubscribers({
+      skip: paginationData?.pageNumber,
+      limit: paginationData?.pageSize,
+      abonType: filterData.abonType,
+    }));
+    setFilterModalOpen(false);
   };
   
   return (
@@ -110,25 +140,12 @@ const Subscribers = () => {
             flexGrow: 1,
           }}
         />
+        <Button
+          onClick={handleFilterModalOpen}
+          variant='outlined'
+          color='secondary'
+        >Фильтр...</Button>
       </Box>
-      <Tabs
-        className='subscribers-tabs'
-        value={currentTab}
-        onChange={(_, value) => onTabChange(value)}
-      >
-        <Tab
-          value='total'
-          label='ОАБ'
-        />
-        <Tab
-          value='active'
-          label='ААБ'
-        />
-        <Tab
-          value='nonactive'
-          label='НАБ'
-        />
-      </Tabs>
       <TableContainer
         component={Paper}
         className='table-container'
@@ -236,6 +253,13 @@ const Subscribers = () => {
           },
         }}
       />
+      <SubscribersFilterModal
+        open={filterModalOpen}
+        handleClose={handleFilterModalClose}
+        handleFilterDataChange={handleFilterDataChange}
+        getSubscribersByFilters={getSubscribersByFilters}
+        abonType={filterData.abonType}
+      ></SubscribersFilterModal>
     </div>
   );
 };
