@@ -7,10 +7,11 @@ import {
   DialogTitle,
   FormControlLabel,
   Radio,
-  RadioGroup
+  RadioGroup,
+  TextField
 } from "@mui/material";
 import './subscribersFilterModal.css';
-import { LoadingButton } from "@mui/lab";
+import { Autocomplete, LoadingButton } from "@mui/lab";
 import { useAppSelector } from "../../app/hooks";
 
 const SubscribersFilterModal = ({
@@ -18,10 +19,12 @@ const SubscribersFilterModal = ({
   handleClose,
   handleFilterDataChange,
   getSubscribersByFilters,
-  abonType,
+  filterData,
 }) => {
   const {
     subscribersLoading,
+    squares,
+    squaresLoading,
   } = useAppSelector(state => state.dataState);
   
   return (
@@ -35,7 +38,13 @@ const SubscribersFilterModal = ({
       <DialogTitle id='alert-dialog-title'>
         Поиск по фильтрам
       </DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px'
+        }}
+      >
         <RadioGroup
           className='abon-type-radio-group'
           row
@@ -47,7 +56,7 @@ const SubscribersFilterModal = ({
               value
             }
           })}
-          value={abonType}
+          value={filterData.abonType}
         >
           <FormControlLabel
             value='active'
@@ -65,6 +74,20 @@ const SubscribersFilterModal = ({
             label='ОАБ'
           />
         </RadioGroup>
+        <Autocomplete
+          disablePortal
+          options={squares?.map(square => square?.squares) || []}
+          renderInput={(params) => <TextField {...params} label='Квадрат'/>}
+          size='small'
+          loading={squaresLoading}
+          value={squares?.find(square => square?.id === filterData?.squares_id)?.squares}
+          onChange={(_, value) => handleFilterDataChange({
+            target: {
+              name: 'squares_id',
+              value: squares?.find(square => square?.squares === value)?.id,
+            }
+          })}
+        />
       </DialogContent>
       <DialogActions>
         <Button

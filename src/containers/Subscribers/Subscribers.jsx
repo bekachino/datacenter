@@ -29,7 +29,6 @@ const Subscribers = () => {
     subscribersLoading,
     subscribersErrorMessage,
     squares,
-    squaresLoading,
     squaresErrorMessage,
   } = useAppSelector(state => state.dataState);
   const [searchWord, setSearchWord] = useState('');
@@ -115,6 +114,7 @@ const Subscribers = () => {
       skip: paginationData?.pageNumber,
       limit: paginationData?.pageSize,
       abonType: filterData.abonType,
+      squares_id: filterData.squares_id,
     }));
     setFilterModalOpen(false);
   };
@@ -258,7 +258,7 @@ const Subscribers = () => {
         handleClose={handleFilterModalClose}
         handleFilterDataChange={handleFilterDataChange}
         getSubscribersByFilters={getSubscribersByFilters}
-        abonType={filterData.abonType}
+        filterData={filterData}
       ></SubscribersFilterModal>
     </div>
   );

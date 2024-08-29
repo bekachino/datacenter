@@ -3,12 +3,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   abonType = 'active',
-  square,
+  squares_id,
   skip,
   limit,
 }, { rejectWithValue }) => {
   try {
-    const squaresQuery = square ? `&squares_id=${square}` : '';
+    const squaresQuery = squares_id ? `&squares_id=${squares_id}` : '';
     
     const req = await axiosApi(`${abonType}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}`);
     return await req.data || [];
