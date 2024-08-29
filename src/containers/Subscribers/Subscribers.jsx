@@ -39,7 +39,7 @@ const Subscribers = () => {
     limit: 100,
   });
   const [filterData, setFilterData] = useState({
-    abonType: 'active'
+    abonType: 'active',
   });
   
   useEffect(() => {
@@ -78,7 +78,10 @@ const Subscribers = () => {
     ));
     dispatch(getSubscribers({
       ...paginationData,
-      [name]: value
+      [name]: value,
+      ...filterData,
+      start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+      end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));
   };
   
@@ -108,6 +111,8 @@ const Subscribers = () => {
       ...paginationData,
       abonType: filterData.abonType,
       squares_id: filterData.squares_id,
+      start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+      end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));
     setFilterModalOpen(false);
   };
@@ -226,7 +231,7 @@ const Subscribers = () => {
             ))}
           </TableBody>
         </Table>
-        {!!subscribers.length && <SubscribersFooter
+        {!!subscribers?.length && <SubscribersFooter
           paginationData={paginationData}
           handlePaginationDataChange={handlePaginationDataChange}
         />}
