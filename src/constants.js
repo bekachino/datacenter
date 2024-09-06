@@ -1,4 +1,4 @@
-export const apiUrl = 'http://10.1.2.101:8001/api/';
+export const apiUrl = 'http://10.1.2.168:8001/api/';
 
 export const SMTH_WENT_WRONG = 'Что-то пошло не так, попробуйте позже';
 
@@ -7,7 +7,7 @@ export const RU_PATHNAMES = {
   'works': 'Наряды',
 };
 
-export const formatDate = (date, showTime ) => {
+export const formatDate = (date, showTime) => {
   const newDate = new Date(date);
   const pad = (num, size) => num.toString().padStart(size, '0');
   

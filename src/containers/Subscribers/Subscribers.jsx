@@ -13,7 +13,11 @@ import {
   TableRow,
   TextField
 } from "@mui/material";
-import { getSquares, getSubscribers } from "../../features/dataThunk";
+import {
+  getLocations, getServiceEngineers,
+  getSquares,
+  getSubscribers
+} from "../../features/dataThunk";
 import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
 import SubscribersFooter
@@ -29,7 +33,7 @@ const Subscribers = () => {
     subscribersLoading,
     subscribersErrorMessage,
     squares,
-    squaresErrorMessage,
+    filterDataErrorMessage,
   } = useAppSelector(state => state.dataState);
   const [searchWord, setSearchWord] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
@@ -44,12 +48,14 @@ const Subscribers = () => {
   
   useEffect(() => {
     dispatch(getSquares());
+    dispatch(getLocations());
+    dispatch(getServiceEngineers());
   }, [dispatch]);
   
   useEffect(() => {
-    if (!!subscribersErrorMessage || !!squaresErrorMessage) setSnackBarOpen(true);
+    if (!!subscribersErrorMessage || !!filterDataErrorMessage) setSnackBarOpen(true);
   }, [
-    squaresErrorMessage,
+    filterDataErrorMessage,
     subscribersErrorMessage
   ]);
   
@@ -77,8 +83,8 @@ const Subscribers = () => {
       }
     ));
     dispatch(getSubscribers({
-      ...paginationData,
       [name]: value,
+      ...paginationData,
       ...filterData,
       start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
       end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
@@ -109,8 +115,7 @@ const Subscribers = () => {
     e?.preventDefault();
     await dispatch(getSubscribers({
       ...paginationData,
-      abonType: filterData.abonType,
-      squares_id: filterData.squares_id,
+      ...filterData,
       start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
       end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));
@@ -243,7 +248,7 @@ const Subscribers = () => {
         }}
         open={snackBarOpen}
         onClose={handleSnackBarClose}
-        message={subscribersErrorMessage || squaresErrorMessage}
+        message={subscribersErrorMessage || filterDataErrorMessage}
         sx={{
           '.MuiSnackbarContent-root': {
             backgroundColor: '#121212',

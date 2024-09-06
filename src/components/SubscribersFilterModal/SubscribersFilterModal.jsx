@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControlLabel,
   Radio,
   RadioGroup,
@@ -22,6 +21,7 @@ import {
   SingleInputDateRangeField
 } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
 import { ruRU } from '@mui/x-date-pickers/locales';
+import Typography from "@mui/material/Typography";
 import './subscribersFilterModal.css';
 
 const theme = createTheme({
@@ -41,6 +41,10 @@ const SubscribersFilterModal = ({
     subscribersLoading,
     squares,
     squaresLoading,
+    locations,
+    locationsLoading,
+    serviceEngineers,
+    serviceEngineersLoading,
   } = useAppSelector(state => state.dataState);
   
   return (
@@ -52,9 +56,6 @@ const SubscribersFilterModal = ({
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
-        <DialogTitle id='alert-dialog-title'>
-          Поиск по фильтрам
-        </DialogTitle>
         <DialogContent
         >
           <Box
@@ -66,72 +67,127 @@ const SubscribersFilterModal = ({
             }}
             onSubmit={getSubscribersByFilters}
           >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer
-                components={[
-                  'SingleInputDateRangeField',
-                ]}
+            <Box>
+              <Typography variant='subtitle1'>
+                по периоду
+              </Typography>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer
+                  components={[
+                    'SingleInputDateRangeField',
+                  ]}
+                >
+                  <SingleInputDateRangeField
+                    label='Выберите период'
+                    value={filterData?.startEndRange}
+                    onChange={(value) => handleFilterDataChange({
+                      target: {
+                        name: 'startEndRange',
+                        value
+                      }
+                    })}
+                    format='DD.MM.YYYY'
+                    size='small'
+                    required
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </Box>
+            <Box>
+              <Typography variant='subtitle1'>
+                по статусу
+              </Typography>
+              <RadioGroup
+                className='abon-type-radio-group'
+                row
+                aria-labelledby='demo-row-radio-buttons-group-label'
+                name='row-radio-buttons-group'
+                onChange={(_, value) => handleFilterDataChange({
+                  target: {
+                    name: 'abonType',
+                    value
+                  }
+                })}
+                value={filterData.abonType}
               >
-                <SingleInputDateRangeField
-                  label='Controlled field'
-                  value={filterData?.startEndRange}
-                  onChange={(value) => handleFilterDataChange({
-                    target: {
-                      name: 'startEndRange',
-                      value
-                    }
-                  })}
-                  format='DD.MM.YYYY'
-                  size='small'
-                  required
+                <FormControlLabel
+                  value='active'
+                  control={<Radio color='success'/>}
+                  label='ААБ'
                 />
-              </DemoContainer>
-            </LocalizationProvider>
-            <RadioGroup
-              className='abon-type-radio-group'
-              row
-              aria-labelledby='demo-row-radio-buttons-group-label'
-              name='row-radio-buttons-group'
-              onChange={(_, value) => handleFilterDataChange({
-                target: {
-                  name: 'abonType',
-                  value
-                }
-              })}
-              value={filterData.abonType}
-            >
-              <FormControlLabel
-                value='active'
-                control={<Radio color='success'/>}
-                label='ААБ'
+                <FormControlLabel
+                  value='nonactive'
+                  control={<Radio color='error'/>}
+                  label='НАБ'
+                />
+                <FormControlLabel
+                  value='total'
+                  control={<Radio color='secondary'/>}
+                  label='ОАБ'
+                />
+              </RadioGroup>
+            </Box>
+            <Box>
+              <Typography
+                variant='subtitle1'
+                gutterBottom
+              >
+                по объекту
+              </Typography>
+              <Autocomplete
+                disablePortal
+                options={squares?.map(square => square?.squares) || []}
+                renderInput={(params) =>
+                  <TextField {...params} label='Квадрат'/>}
+                size='small'
+                loading={squaresLoading}
+                value={squares?.find(square => square?.id === filterData?.squares_id)?.squares}
+                onChange={(_, value) => handleFilterDataChange({
+                  target: {
+                    name: 'squares_id',
+                    value: squares?.find(square => square?.squares === value)?.id,
+                  }
+                })}
               />
-              <FormControlLabel
-                value='nonactive'
-                control={<Radio color='error'/>}
-                label='НАБ'
+              <Autocomplete
+                disablePortal
+                options={locations?.map(location => location?.locations) || []}
+                renderInput={(params) =>
+                  <TextField {...params} label='Локация'/>}
+                size='small'
+                loading={locationsLoading}
+                value={locations?.find(location => location?.id === filterData?.location_id)?.locations}
+                onChange={(_, value) => handleFilterDataChange({
+                  target: {
+                    name: 'location_id',
+                    value: locations?.find(location => location?.locations === value)?.id,
+                  }
+                })}
+                sx={{ pt: 1 }}
               />
-              <FormControlLabel
-                value='total'
-                control={<Radio color='secondary'/>}
-                label='ОАБ'
+            </Box>
+            <Box>
+              <Typography
+                variant='subtitle1'
+                gutterBottom
+              >
+                по субъекту
+              </Typography>
+              <Autocomplete
+                disablePortal
+                options={serviceEngineers?.map(serviceEngineer => serviceEngineer?.service_engineers_id) || []}
+                renderInput={(params) => <TextField {...params} label='СИ'/>}
+                size='small'
+                loading={serviceEngineersLoading}
+                value={serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === filterData?.service_engineers_id)?.service_engineers_id}
+                onChange={(_, value) => handleFilterDataChange({
+                  target: {
+                    name: 'service_engineers_id',
+                    value: serviceEngineers?.find(serviceEngineer => serviceEngineer?.service_engineers_id === value)?.service_engineers_id,
+                  }
+                })}
               />
-            </RadioGroup>
-            <Autocomplete
-              disablePortal
-              options={squares?.map(square => square?.squares) || []}
-              renderInput={(params) => <TextField {...params} label='Квадрат'
-                required
-              />}
-              size='small'
-              loading={squaresLoading}
-              value={squares?.find(square => square?.id === filterData?.squares_id)?.squares}
-              onChange={(_, value) => handleFilterDataChange({
-                target: {
-                  name: 'squares_id',
-                  value: squares?.find(square => square?.squares === value)?.id,
-                }
-              })}
-            />
+            </Box>
             <DialogActions>
               <Button
                 onClick={handleClose}

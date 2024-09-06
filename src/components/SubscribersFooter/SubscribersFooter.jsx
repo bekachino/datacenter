@@ -12,7 +12,7 @@ const SubscribersFooter = ({
   return (
     <Box className='subscribers-footer'>
       <Pagination
-        count={20}
+        count={100}
         siblingCount={2}
         variant='outlined'
         sx={{ m: '0 auto' }}
