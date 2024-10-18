@@ -22,25 +22,42 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
     const req = await axiosApi(`${abonType}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}${locationQuery}${serviceEngineerQuery}${startDate}${endDate}`);
     return await req.data || [];
   } catch (e) {
-    rejectWithValue('Ошибка при получении абонентов');
+    return rejectWithValue('Ошибка при получении абонентов');
   }
 });
 
-export const getSquares = createAsyncThunk('data/getSquares', async (_, { rejectWithValue }) => {
+export const getRegions = createAsyncThunk('data/getRegions', async (_, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`squares/`);
+    const req = await axiosApi(`regions/`);
     return await req.data || [];
   } catch (e) {
-    rejectWithValue('Ошибка при получении квадратов');
+    return rejectWithValue('Ошибка при получении регионов');
   }
 });
 
-export const getLocations = createAsyncThunk('data/getLocations', async (_, { rejectWithValue }) => {
+export const getSquares = createAsyncThunk('data/getSquares', async (ids, { rejectWithValue }) => {
   try {
-    const req = await axiosApi(`locations/`);
-    return await req.data || [];
+    const squares = await axiosApi(`regions_squares/?regions_id=${ids[0] || 0}`);
+    const squaresWithNames = await axiosApi(`squares/`);
+    return [
+      await squares.data,
+      await squaresWithNames.data
+    ] || [];
   } catch (e) {
-    rejectWithValue('Ошибка при получении локаций');
+    return rejectWithValue('Ошибка при получении квадратов');
+  }
+});
+
+export const getLocations = createAsyncThunk('data/getLocations', async (id, { rejectWithValue }) => {
+  try {
+    const locations = await axiosApi(`squares_locations/?squares_id=${id || 0}`);
+    const locationsWithNames = await axiosApi(`locations/`);
+    return [
+      await locations.data,
+      await locationsWithNames.data
+    ] || [];
+  } catch (e) {
+    return rejectWithValue('Ошибка при получении локаций');
   }
 });
 
@@ -49,6 +66,6 @@ export const getServiceEngineers = createAsyncThunk('data/getServiceEngineers', 
     const req = await axiosApi(`service_engineers/`);
     return await req.data || [];
   } catch (e) {
-    rejectWithValue('Ошибка при получении списка СИ');
+    return rejectWithValue('Ошибка при получении списка СИ');
   }
 });

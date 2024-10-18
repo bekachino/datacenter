@@ -14,17 +14,15 @@ import {
   TextField
 } from "@mui/material";
 import {
-  getLocations, getServiceEngineers,
-  getSquares,
-  getSubscribers
+  getLocations, getRegions, getServiceEngineers, getSquares, getSubscribers
 } from "../../features/dataThunk";
 import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
-import './subscribers.css';
 import SubscribersFilterModal
   from "../../components/SubscribersFilterModal/SubscribersFilterModal";
+import './subscribers.css';
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
@@ -47,8 +45,7 @@ const Subscribers = () => {
   });
   
   useEffect(() => {
-    dispatch(getSquares());
-    dispatch(getLocations());
+    dispatch(getRegions());
     dispatch(getServiceEngineers());
   }, [dispatch]);
   
@@ -83,9 +80,7 @@ const Subscribers = () => {
       }
     ));
     dispatch(getSubscribers({
-      [name]: value,
-      ...paginationData,
-      ...filterData,
+      [name]: value, ...paginationData, ...filterData,
       start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
       end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));
@@ -102,6 +97,25 @@ const Subscribers = () => {
         [name]: value,
       }
     ));
+    
+    if (name === 'regions_ids') {
+      setFilterData(prevState => (
+        {
+          ...prevState,
+          squares_ids: [],
+          location_ids: [],
+        }
+      ));
+      dispatch(getSquares(value));
+    } else if (name === 'squares_ids') {
+      setFilterData(prevState => (
+        {
+          ...prevState,
+          location_ids: [],
+        }
+      ));
+      dispatch(getLocations(value));
+    }
   };
   
   const subscribersBySearchWord = useCallback(() => {
@@ -114,8 +128,7 @@ const Subscribers = () => {
   const getSubscribersByFilters = async (e) => {
     e?.preventDefault();
     await dispatch(getSubscribers({
-      ...paginationData,
-      ...filterData,
+      ...paginationData, ...filterData,
       start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
       end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));

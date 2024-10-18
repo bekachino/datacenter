@@ -39,9 +39,13 @@ const SubscribersFilterModal = ({
 }) => {
   const {
     subscribersLoading,
+    regions,
+    regionsLoading,
     squares,
+    squaresWithNames,
     squaresLoading,
     locations,
+    locationsWithNames,
     locationsLoading,
     serviceEngineers,
     serviceEngineersLoading,
@@ -135,34 +139,87 @@ const SubscribersFilterModal = ({
                 по объекту
               </Typography>
               <Autocomplete
-                disablePortal
-                options={squares?.map(square => square?.squares) || []}
-                renderInput={(params) =>
-                  <TextField {...params} label='Квадрат'/>}
+                multiple
+                id='regions-outlined'
+                options={regions?.map(region => (
+                  {
+                    id: region?.id,
+                    label: region?.region
+                  }
+                )) || []}
+                getOptionLabel={(option) => option?.label}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label='Регионы'
+                    placeholder='Регионы'
+                  />
+                )}
                 size='small'
-                loading={squaresLoading}
-                value={squares?.find(square => square?.id === filterData?.squares_id)?.squares}
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
-                    name: 'squares_id',
-                    value: squares?.find(square => square?.squares === value)?.id,
+                    name: 'regions_ids',
+                    value: value?.map(region => region?.id),
                   }
                 })}
+                loading={regionsLoading}
+                sx={{ pt: 1 }}
               />
               <Autocomplete
-                disablePortal
-                options={locations?.map(location => location?.locations) || []}
-                renderInput={(params) =>
-                  <TextField {...params} label='Локация'/>}
+                multiple
+                id='squares-outlined'
+                options={squares?.map(square => (
+                  {
+                    id: squaresWithNames?.find(squareWithName => squareWithName?.id === square?.squares_id)?.id,
+                    label: squaresWithNames?.find(squareWithName => squareWithName?.id === square?.squares_id)?.squares,
+                  }
+                )) || []}
+                getOptionLabel={(option) => option?.label}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label='Квадраты'
+                    placeholder='Квадраты'
+                  />
+                )}
                 size='small'
-                loading={locationsLoading}
-                value={locations?.find(location => location?.id === filterData?.location_id)?.locations}
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
-                    name: 'location_id',
-                    value: locations?.find(location => location?.locations === value)?.id,
+                    name: 'squares_ids',
+                    value: value?.map(square => square?.id),
                   }
                 })}
+                loading={squaresLoading}
+                sx={{ pt: 1 }}
+              />
+              <Autocomplete
+                multiple
+                id='locations-outlined'
+                options={locations?.map(location => (
+                  {
+                    id: locationsWithNames?.find(locationWithName => locationWithName?.id === location?.locations_id)?.id,
+                    label: locationsWithNames?.find(locationWithName => locationWithName?.id === location?.locations_id)?.locations,
+                  }
+                )) || []}
+                getOptionLabel={(option) => option?.label}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label='Локации'
+                    placeholder='Локации'
+                  />
+                )}
+                size='small'
+                onChange={(_, value) => handleFilterDataChange({
+                  target: {
+                    name: 'location_ids',
+                    value: value?.map(location => location?.id),
+                  }
+                })}
+                loading={locationsLoading}
                 sx={{ pt: 1 }}
               />
             </Box>

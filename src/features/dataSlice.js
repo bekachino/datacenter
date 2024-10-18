@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  getLocations,
+  getLocations, getRegions,
   getServiceEngineers,
   getSquares,
   getSubscribers
@@ -9,10 +9,14 @@ import {
 const initialState = {
   currentDrawer: '',
   subscribers: [],
+  regions: [],
   squares: [],
+  squaresWithNames: [],
   locations: [],
+  locationsWithNames: [],
   serviceEngineers: [],
   subscribersLoading: false,
+  regionsLoading: false,
   squaresLoading: false,
   locationsLoading: false,
   serviceEngineersLoading: false,
@@ -43,13 +47,27 @@ const DataSlice = createSlice({
       state.subscribersErrorMesgage = error;
     });
     
+    builder.addCase(getRegions.pending, (state) => {
+      state.regionsLoading = true;
+      state.filterDataErrorMessage = '';
+    });
+    builder.addCase(getRegions.fulfilled, (state, { payload: res }) => {
+      state.regionsLoading = false;
+      state.regions = res;
+    });
+    builder.addCase(getRegions.rejected, (state, { payload: error }) => {
+      state.regionsLoading = false;
+      state.filterDataErrorMessage = error;
+    });
+    
     builder.addCase(getSquares.pending, (state) => {
       state.squaresLoading = true;
       state.filterDataErrorMessage = '';
     });
     builder.addCase(getSquares.fulfilled, (state, { payload: res }) => {
       state.squaresLoading = false;
-      state.squares = res;
+      state.squares = res[0];
+      state.squaresWithNames = res[1];
     });
     builder.addCase(getSquares.rejected, (state, { payload: error }) => {
       state.squaresLoading = false;
@@ -62,7 +80,8 @@ const DataSlice = createSlice({
     });
     builder.addCase(getLocations.fulfilled, (state, { payload: res }) => {
       state.locationsLoading = false;
-      state.locations = res;
+      state.locations = res[0];
+      state.locationsWithNames = res[1];
     });
     builder.addCase(getLocations.rejected, (state, { payload: error }) => {
       state.locationsLoading = false;
