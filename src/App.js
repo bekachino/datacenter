@@ -15,12 +15,6 @@ const App = () => {
           <Subscribers/>
         </Suspense>}
       />
-      {/*<Route*/}
-      {/*  path='works'*/}
-      {/*  element={<Suspense fallback={<></>}>*/}
-      {/*    <Works/>*/}
-      {/*  </Suspense>}*/}
-      {/*/>*/}
     </>
   );
   

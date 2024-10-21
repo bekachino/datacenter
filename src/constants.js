@@ -1,9 +1,9 @@
-export const apiUrl = 'http://10.1.2.48:8001/api/';
+export const apiUrl = 'http://10.1.2.48:8000/api/';
 
 export const SMTH_WENT_WRONG = 'Что-то пошло не так, попробуйте позже';
 
 export const RU_PATHNAMES = {
-  'subscribers': 'Абоненты',
+  'subscribers': 'Абоненты | Демонтажи',
   'works': 'Наряды',
 };
 

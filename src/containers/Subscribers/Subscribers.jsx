@@ -23,6 +23,7 @@ import SubscribersFooter
 import SubscribersFilterModal
   from "../../components/SubscribersFilterModal/SubscribersFilterModal";
 import './subscribers.css';
+import Typography from "@mui/material/Typography";
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
@@ -80,7 +81,9 @@ const Subscribers = () => {
       }
     ));
     dispatch(getSubscribers({
-      [name]: value, ...paginationData, ...filterData,
+      ...paginationData,
+      [name]: value,
+      ...filterData,
       start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
       end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
     }));
@@ -98,23 +101,23 @@ const Subscribers = () => {
       }
     ));
     
-    if (name === 'regions_ids') {
+    if (name === 'regions') {
       setFilterData(prevState => (
         {
           ...prevState,
-          squares_ids: [],
-          location_ids: [],
+          squares: [],
+          locations: [],
         }
       ));
-      dispatch(getSquares(value));
-    } else if (name === 'squares_ids') {
+      dispatch(getSquares(value?.map(square => square?.id)));
+    } else if (name === 'squares') {
       setFilterData(prevState => (
         {
           ...prevState,
-          location_ids: [],
+          locations: [],
         }
       ));
-      dispatch(getLocations(value));
+      dispatch(getLocations(value?.map(location => location?.id)));
     }
   };
   
@@ -221,7 +224,7 @@ const Subscribers = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {(
+            {subscribersBySearchWord()?.length ? (
               subscribersBySearchWord() || []
             )?.map((row) => (
               <TableRow
@@ -246,7 +249,15 @@ const Subscribers = () => {
                 <TableCell align='center'>{row?.last_pay || '-'}</TableCell>
                 <TableCell align='center'>{row?.ip_address || '-'}</TableCell>
               </TableRow>
-            ))}
+            )) : <TableRow>
+              <TableCell colSpan={10}>
+                <Box display="flex" justifyContent="center" alignItems="center" height="50px">
+                  <Typography variant="h6" color="textSecondary">
+                    Нет данных
+                  </Typography>
+                </Box>
+              </TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         {!!subscribers?.length && <SubscribersFooter

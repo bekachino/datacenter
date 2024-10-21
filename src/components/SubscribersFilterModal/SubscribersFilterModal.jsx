@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
+  Checkbox,
   createTheme,
   Dialog,
   DialogActions,
@@ -12,14 +13,13 @@ import {
   ThemeProvider
 } from "@mui/material";
 import { Autocomplete, LoadingButton } from "@mui/lab";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+
 import { useAppSelector } from "../../app/hooks";
 import Box from "@mui/material/Box";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import {
-  SingleInputDateRangeField
-} from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
 import { ruRU } from '@mui/x-date-pickers/locales';
 import Typography from "@mui/material/Typography";
 import './subscribersFilterModal.css';
@@ -51,6 +51,15 @@ const SubscribersFilterModal = ({
     serviceEngineersLoading,
   } = useAppSelector(state => state.dataState);
   
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const muiCensore = document.querySelector('.MuiPickersLayout-contentWrapper .MuiDateRangeCalendar-root div:first-child');
+      
+      if (muiCensore && muiCensore.style.zIndex === '100000' && muiCensore.style.pointerEvents === 'none') muiCensore.remove();
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+  
   return (
     <ThemeProvider theme={theme}>
       <Dialog
@@ -78,22 +87,24 @@ const SubscribersFilterModal = ({
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer
                   components={[
-                    'SingleInputDateRangeField',
+                    'DateRangePicker',
+                    'DateRangePicker'
                   ]}
                 >
-                  <SingleInputDateRangeField
-                    label='Выберите период'
-                    value={filterData?.startEndRange}
-                    onChange={(value) => handleFilterDataChange({
-                      target: {
-                        name: 'startEndRange',
-                        value
-                      }
-                    })}
-                    format='DD.MM.YYYY'
-                    size='small'
-                    required
-                  />
+                  <DemoItem component='DateRangePicker'>
+                    <DateRangePicker
+                      value={filterData?.startEndRange}
+                      onChange={(value) => handleFilterDataChange({
+                        target: {
+                          name: 'startEndRange',
+                          value
+                        }
+                      })}
+                      format='DD.MM.YYYY'
+                      size='small'
+                      required
+                    />
+                  </DemoItem>
                 </DemoContainer>
               </LocalizationProvider>
             </Box>
@@ -129,6 +140,11 @@ const SubscribersFilterModal = ({
                   control={<Radio color='secondary'/>}
                   label='ОАБ'
                 />
+                <FormControlLabel
+                  value='resolution'
+                  control={<Radio color='info'/>}
+                  label='Демонтажи'
+                />
               </RadioGroup>
             </Box>
             <Box>
@@ -144,9 +160,10 @@ const SubscribersFilterModal = ({
                 options={regions?.map(region => (
                   {
                     id: region?.id,
-                    label: region?.region
+                    label: region?.region || region?.id || '*неизвестный регион*',
                   }
                 )) || []}
+                value={filterData?.regions || []}
                 getOptionLabel={(option) => option?.label}
                 filterSelectedOptions
                 renderInput={(params) => (
@@ -159,8 +176,8 @@ const SubscribersFilterModal = ({
                 size='small'
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
-                    name: 'regions_ids',
-                    value: value?.map(region => region?.id),
+                    name: 'regions',
+                    value,
                   }
                 })}
                 loading={regionsLoading}
@@ -172,9 +189,10 @@ const SubscribersFilterModal = ({
                 options={squares?.map(square => (
                   {
                     id: squaresWithNames?.find(squareWithName => squareWithName?.id === square?.squares_id)?.id,
-                    label: squaresWithNames?.find(squareWithName => squareWithName?.id === square?.squares_id)?.squares,
+                    label: squaresWithNames?.find(squareWithName => squareWithName?.id === square?.squares_id)?.squares || square?.squares_id || '*неизвестный квадрат*',
                   }
                 )) || []}
+                value={filterData?.squares || []}
                 getOptionLabel={(option) => option?.label}
                 filterSelectedOptions
                 renderInput={(params) => (
@@ -187,8 +205,8 @@ const SubscribersFilterModal = ({
                 size='small'
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
-                    name: 'squares_ids',
-                    value: value?.map(square => square?.id),
+                    name: 'squares',
+                    value,
                   }
                 })}
                 loading={squaresLoading}
@@ -200,9 +218,10 @@ const SubscribersFilterModal = ({
                 options={locations?.map(location => (
                   {
                     id: locationsWithNames?.find(locationWithName => locationWithName?.id === location?.locations_id)?.id,
-                    label: locationsWithNames?.find(locationWithName => locationWithName?.id === location?.locations_id)?.locations,
+                    label: locationsWithNames?.find(locationWithName => locationWithName?.id === location?.locations_id)?.locations || location?.locations_id.toString() || '*неизвестная локация*',
                   }
                 )) || []}
+                value={filterData?.locations || []}
                 getOptionLabel={(option) => option?.label}
                 filterSelectedOptions
                 renderInput={(params) => (
@@ -215,8 +234,8 @@ const SubscribersFilterModal = ({
                 size='small'
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
-                    name: 'location_ids',
-                    value: value?.map(location => location?.id),
+                    name: 'locations',
+                    value,
                   }
                 })}
                 loading={locationsLoading}
@@ -232,7 +251,12 @@ const SubscribersFilterModal = ({
               </Typography>
               <Autocomplete
                 disablePortal
-                options={serviceEngineers?.map(serviceEngineer => serviceEngineer?.service_engineers_id) || []}
+                options={serviceEngineers?.map(serviceEngineer => (
+                  {
+                    id: serviceEngineer?.id,
+                    label: serviceEngineer?.id.toString(),
+                  }
+                )) || []}
                 renderInput={(params) => <TextField {...params} label='СИ'/>}
                 size='small'
                 loading={serviceEngineersLoading}
@@ -240,7 +264,7 @@ const SubscribersFilterModal = ({
                 onChange={(_, value) => handleFilterDataChange({
                   target: {
                     name: 'service_engineers_id',
-                    value: serviceEngineers?.find(serviceEngineer => serviceEngineer?.service_engineers_id === value)?.service_engineers_id,
+                    value: serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === value?.id)?.service_engineers_id,
                   }
                 })}
               />

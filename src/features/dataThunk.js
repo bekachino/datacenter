@@ -4,8 +4,9 @@ import dayjs from "dayjs";
 
 export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   abonType = 'active',
-  squares_id,
-  location_id,
+  regions,
+  squares,
+  locations,
   service_engineers_id,
   start_date,
   end_date,
@@ -13,13 +14,14 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   limit,
 }, { rejectWithValue }) => {
   try {
-    const squaresQuery = squares_id ? `&squares_id=${squares_id}` : '';
-    const locationQuery = location_id ? `&location_id=${location_id}` : '';
+    const regionsQuery = regions?.length ? `&regions=${regions?.map(region => region?.label)}` : '';
+    const squaresQuery = squares?.length ? `&squares_id=${squares?.map(squares_id => squares_id?.id)}` : '';
+    const locationsQuery = locations?.length ? `&addresses=${locations?.map(location => location?.label)}` : '';
     const serviceEngineerQuery = service_engineers_id ? `&service_engineers_id=${service_engineers_id}` : '';
     const startDate = !!start_date && !!end_date ? `&start_date=${dayjs(start_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
     const endDate = !!start_date && !!end_date ? `&end_date=${dayjs(end_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
     
-    const req = await axiosApi(`${abonType}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${squaresQuery}${locationQuery}${serviceEngineerQuery}${startDate}${endDate}`);
+    const req = await axiosApi(`${abonType}_subscriber_base/?skip=${skip || 1}&limit=${limit || 100}${startDate}${endDate}${regionsQuery}${squaresQuery}${locationsQuery}${serviceEngineerQuery}`);
     return await req.data || [];
   } catch (e) {
     return rejectWithValue('Ошибка при получении абонентов');
@@ -48,9 +50,9 @@ export const getSquares = createAsyncThunk('data/getSquares', async (ids, { reje
   }
 });
 
-export const getLocations = createAsyncThunk('data/getLocations', async (id, { rejectWithValue }) => {
+export const getLocations = createAsyncThunk('data/getLocations', async (ids, { rejectWithValue }) => {
   try {
-    const locations = await axiosApi(`squares_locations/?squares_id=${id || 0}`);
+    const locations = await axiosApi(`squares_locations/?squares_id=${ids[0] || 0}`);
     const locationsWithNames = await axiosApi(`locations/`);
     return [
       await locations.data,
