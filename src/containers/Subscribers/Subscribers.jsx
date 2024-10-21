@@ -1,17 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
-  Button,
-  LinearProgress,
-  Paper,
-  Snackbar,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField
+  Button, Paper, Snackbar, TableContainer, TextField
 } from "@mui/material";
 import {
   getLocations,
@@ -21,24 +11,23 @@ import {
   getSquares,
   getSubscribers
 } from "../../features/dataThunk";
-import { formatDate } from "../../constants";
 import Box from "@mui/material/Box";
 import SubscribersFooter
   from "../../components/SubscribersFooter/SubscribersFooter";
 import SubscribersFilterModal
   from "../../components/SubscribersFilterModal/SubscribersFilterModal";
-import './subscribers.css';
-import Typography from "@mui/material/Typography";
 import SubscribersTable
   from "../../components/SubscribersTable/SubscribersTable";
+import ResolutionsTable
+  from "../../components/ResolutionsTable/ResolutionsTable";
+import './subscribers.css';
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
   const {
     subscribers,
-    subscribersLoading,
     subscribersErrorMessage,
-    squares,
+    resolutionsErrorMessage,
     filterDataErrorMessage,
   } = useAppSelector(state => state.dataState);
   const [searchWord, setSearchWord] = useState('');
@@ -58,9 +47,10 @@ const Subscribers = () => {
   }, [dispatch]);
   
   useEffect(() => {
-    if (!!subscribersErrorMessage || !!filterDataErrorMessage) setSnackBarOpen(true);
+    if (!!subscribersErrorMessage || !!resolutionsErrorMessage || !!filterDataErrorMessage) setSnackBarOpen(true);
   }, [
     filterDataErrorMessage,
+    resolutionsErrorMessage,
     subscribersErrorMessage
   ]);
   
@@ -176,7 +166,11 @@ const Subscribers = () => {
         component={Paper}
         className='table-container'
       >
-        <SubscribersTable searchWord={searchWord}/>
+        {
+          filterData?.abonType === 'resolution' ?
+            <ResolutionsTable searchWord={searchWord}/> :
+            <SubscribersTable searchWord={searchWord}/>
+        }
         {!!subscribers?.length && <SubscribersFooter
           paginationData={paginationData}
           handlePaginationDataChange={handlePaginationDataChange}
@@ -189,7 +183,7 @@ const Subscribers = () => {
         }}
         open={snackBarOpen}
         onClose={handleSnackBarClose}
-        message={subscribersErrorMessage || filterDataErrorMessage}
+        message={subscribersErrorMessage || resolutionsErrorMessage || filterDataErrorMessage}
         sx={{
           '.MuiSnackbarContent-root': {
             backgroundColor: '#121212',

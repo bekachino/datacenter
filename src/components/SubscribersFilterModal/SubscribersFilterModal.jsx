@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
   Button,
-  Checkbox,
   createTheme,
   Dialog,
   DialogActions,
@@ -39,6 +38,7 @@ const SubscribersFilterModal = ({
 }) => {
   const {
     subscribersLoading,
+    resolutionsLoading,
     regions,
     regionsLoading,
     squares,
@@ -279,7 +279,7 @@ const SubscribersFilterModal = ({
                 type='submit'
                 variant='contained'
                 color='success'
-                loading={subscribersLoading}
+                loading={!!subscribersLoading || !!resolutionsLoading}
               >
                 Поиск
               </LoadingButton>
