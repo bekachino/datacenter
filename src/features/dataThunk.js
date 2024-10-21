@@ -28,6 +28,31 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   }
 });
 
+export const getResolutions = createAsyncThunk('data/getResolutions', async ({
+  abonType = 'active',
+  regions,
+  squares,
+  locations,
+  service_engineers_id,
+  start_date,
+  end_date,
+  skip,
+  limit,
+}, { rejectWithValue }) => {
+  try {
+    const regionsQuery = regions?.length ? `&region=${regions?.map(region => region?.label)}` : '';
+    const squaresQuery = squares?.length ? `&squares_id=${squares?.map(squares_id => squares_id?.id)}` : '';
+    const locationsQuery = locations?.length ? `&address=${locations?.map(location => location?.label)}` : '';
+    const serviceEngineerQuery = service_engineers_id ? `&service_engineers_id=${service_engineers_id}` : '';
+    const endDate = !!start_date && !!end_date ? `&closed_date=${dayjs(end_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
+    
+    const req = await axiosApi(`dismantled-users/?skip=${skip || 1}&limit=${limit || 100}${endDate}${regionsQuery}${squaresQuery}${locationsQuery}${serviceEngineerQuery}`);
+    return await req.data || [];
+  } catch (e) {
+    return rejectWithValue('Ошибка при получении абонентов');
+  }
+});
+
 export const getRegions = createAsyncThunk('data/getRegions', async (_, { rejectWithValue }) => {
   try {
     const req = await axiosApi(`regions/`);
