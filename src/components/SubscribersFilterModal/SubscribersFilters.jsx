@@ -1,18 +1,12 @@
 import React, { useEffect } from 'react';
 import {
-  createTheme,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  ThemeProvider
+  createTheme, FormControlLabel, Radio, RadioGroup, TextField, ThemeProvider
 } from "@mui/material";
 import { Autocomplete, LoadingButton } from "@mui/lab";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-
 import { useAppSelector } from "../../app/hooks";
 import Box from "@mui/material/Box";
 import { ruRU } from '@mui/x-date-pickers/locales';
@@ -34,11 +28,13 @@ const SubscribersFilters = ({
     subscribersLoading,
     resolutionsLoading,
     regions,
+    serviceEngineers,
     regionsLoading,
     squares,
     squaresWithNames,
     squaresLoading,
     locations,
+    serviceEngineersLoading,
     locationsWithNames,
     locationsLoading,
   } = useAppSelector(state => state.dataState);
@@ -66,7 +62,7 @@ const SubscribersFilters = ({
       >
         <Box>
           <Typography variant='subtitle1'>
-            по периоду
+            Выберите период
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer
@@ -87,14 +83,20 @@ const SubscribersFilters = ({
                   format='DD.MM.YYYY'
                   size='small'
                   required
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      required: true
+                    }
+                  }}
                 />
               </DemoItem>
             </DemoContainer>
           </LocalizationProvider>
         </Box>
-        <Box>
+        <Box style={{ display: !!filterData?.startEndRange?.[1] ? 'block' : 'none' }}>
           <Typography variant='subtitle1'>
-            по статусу
+            Выберите показатель
           </Typography>
           <RadioGroup
             className='abon-type-radio-group'
@@ -131,12 +133,12 @@ const SubscribersFilters = ({
             />
           </RadioGroup>
         </Box>
-        <Box>
+        <Box style={{ display: !!filterData?.startEndRange?.[1] ? 'block' : 'none' }}>
           <Typography
             variant='subtitle1'
             gutterBottom
           >
-            по объекту
+            Выберите объект
           </Typography>
           <Autocomplete
             multiple
@@ -155,6 +157,7 @@ const SubscribersFilters = ({
                 {...params}
                 label='Регионы'
                 placeholder='Регионы'
+                required={!filterData?.regions?.length}
               />
             )}
             size='small'
@@ -226,33 +229,33 @@ const SubscribersFilters = ({
             sx={{ pt: 1 }}
           />
         </Box>
-        {/*<Box>*/}
-        {/*  <Typography*/}
-        {/*    variant='subtitle1'*/}
-        {/*    gutterBottom*/}
-        {/*  >*/}
-        {/*    по субъекту*/}
-        {/*  </Typography>*/}
-        {/*  <Autocomplete*/}
-        {/*    disablePortal*/}
-        {/*    options={serviceEngineers?.map(serviceEngineer => (*/}
-        {/*      {*/}
-        {/*        id: serviceEngineer?.id,*/}
-        {/*        label: serviceEngineer?.id.toString(),*/}
-        {/*      }*/}
-        {/*    )) || []}*/}
-        {/*    renderInput={(params) => <TextField {...params} label='СИ'/>}*/}
-        {/*    size='small'*/}
-        {/*    loading={serviceEngineersLoading}*/}
-        {/*    value={serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === filterData?.service_engineers_id)?.service_engineers_id}*/}
-        {/*    onChange={(_, value) => handleFilterDataChange({*/}
-        {/*      target: {*/}
-        {/*        name: 'service_engineers_id',*/}
-        {/*        value: serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === value?.id)?.service_engineers_id,*/}
-        {/*      }*/}
-        {/*    })}*/}
-        {/*  />*/}
-        {/*</Box>*/}
+        <Box style={{ display: !!filterData?.regions?.length ? 'block' : 'none' }}>
+          <Typography
+            variant='subtitle1'
+            gutterBottom
+          >
+            Выберите субъект
+          </Typography>
+          <Autocomplete
+            disablePortal
+            options={serviceEngineers?.map(serviceEngineer => (
+              {
+                id: serviceEngineer?.id,
+                label: serviceEngineer?.id.toString(),
+              }
+            )) || []}
+            renderInput={(params) => <TextField {...params} label='СИ'/>}
+            size='small'
+            loading={serviceEngineersLoading}
+            value={serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === filterData?.service_engineers_id)?.service_engineers_id}
+            onChange={(_, value) => handleFilterDataChange({
+              target: {
+                name: 'service_engineers_id',
+                value: serviceEngineers?.find(serviceEngineer => serviceEngineer?.id === value?.id)?.service_engineers_id,
+              }
+            })}
+          />
+        </Box>
         <LoadingButton
           type='submit'
           variant='contained'
