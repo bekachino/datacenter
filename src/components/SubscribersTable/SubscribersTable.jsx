@@ -68,8 +68,8 @@ const SubscribersTable = ({ searchWord }) => {
           >Тариф</TableCell>
           <TableCell
             align='center'
-            sx={{ minWidth: '110px' }}
-          >Баланс</TableCell>
+            sx={{ minWidth: '140px' }}
+          >Стоимость ТП</TableCell>
           <TableCell
             align='center'
             sx={{ minWidth: '170px' }}

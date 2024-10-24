@@ -34,6 +34,11 @@ const DataSlice = createSlice({
     setDrawer: (state, action) => {
       state.currentDrawer = action.payload;
     },
+    clearErrorMessages: state => {
+      state.subscribersErrorMessage = '';
+      state.resolutionsErrorMessage = '';
+      state.filterDataErrorMessage = '';
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getSubscribers.pending, (state) => {
@@ -124,5 +129,5 @@ const DataSlice = createSlice({
 
 export const dataReducer = DataSlice.reducer;
 export const {
-  setDrawer,
+  setDrawer, clearErrorMessages
 } = DataSlice.actions;

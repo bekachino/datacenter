@@ -14,3 +14,37 @@
   bottom: 0;
   width: 100% !important;
 }
+
+.subscribers-table-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+.search-application,
+.subscribers-table-wrapper form,
+.table-container {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 720px) {
+  .subscribers-table-wrapper {
+    grid-template-columns: minmax(300px, 350px) 1fr;
+    grid-template-rows: auto;
+  }
+  
+  .subscribers-table-wrapper form {
+    grid-column: 1;
+  }
+  
+  .table-container {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .search-application {
+    grid-row: 2;
+  }
+}

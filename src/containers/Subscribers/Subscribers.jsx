@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   Button, Paper, Snackbar, TableContainer, TextField
@@ -12,15 +12,13 @@ import {
   getSubscribers
 } from "../../features/dataThunk";
 import Box from "@mui/material/Box";
-import SubscribersFooter
-  from "../../components/SubscribersFooter/SubscribersFooter";
-import SubscribersFilterModal
-  from "../../components/SubscribersFilterModal/SubscribersFilterModal";
-import SubscribersTable
-  from "../../components/SubscribersTable/SubscribersTable";
-import ResolutionsTable
-  from "../../components/ResolutionsTable/ResolutionsTable";
+import { clearErrorMessages } from "../../features/dataSlice";
 import './subscribers.css';
+
+const SubscribersFilters = lazy(() => import('../../components/SubscribersFilterModal/SubscribersFilters'));
+const SubscribersTable = lazy(() => import('../../components/SubscribersTable/SubscribersTable'));
+const ResolutionsTable = lazy(() => import('../../components/ResolutionsTable/ResolutionsTable'));
+const SubscribersFooter = lazy(() => import('../../components/SubscribersFooter/SubscribersFooter'));
 
 const Subscribers = () => {
   const dispatch = useAppDispatch();
@@ -31,8 +29,6 @@ const Subscribers = () => {
     filterDataErrorMessage,
   } = useAppSelector(state => state.dataState);
   const [searchWord, setSearchWord] = useState('');
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [paginationData, setPaginationData] = useState({
     skip: 1,
     limit: 100,
@@ -46,24 +42,8 @@ const Subscribers = () => {
     dispatch(getServiceEngineers());
   }, [dispatch]);
   
-  useEffect(() => {
-    if (!!subscribersErrorMessage || !!resolutionsErrorMessage || !!filterDataErrorMessage) setSnackBarOpen(true);
-  }, [
-    filterDataErrorMessage,
-    resolutionsErrorMessage,
-    subscribersErrorMessage
-  ]);
-  
   const handleSnackBarClose = () => {
-    setSnackBarOpen(false);
-  };
-  
-  const handleFilterModalOpen = () => {
-    setFilterModalOpen(true);
-  };
-  
-  const handleFilterModalClose = () => {
-    setFilterModalOpen(false);
+    dispatch(clearErrorMessages());
   };
   
   const handlePaginationDataChange = (e) => {
@@ -132,19 +112,11 @@ const Subscribers = () => {
         end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
       }));
     }
-    setFilterModalOpen(false);
   };
   
   return (
     <div className='subscribers'>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-          m: '10px 0 15px'
-        }}
-      >
+      <Box className='subscribers-table-wrapper'>
         <TextField
           label='Поиск...'
           variant='outlined'
@@ -156,34 +128,36 @@ const Subscribers = () => {
             flexGrow: 1,
           }}
         />
-        <Button
-          onClick={handleFilterModalOpen}
-          variant='outlined'
-          color='secondary'
-        >Фильтр...</Button>
+        <Suspense fallback={<></>}>
+          <SubscribersFilters
+            handleFilterDataChange={handleFilterDataChange}
+            getSubscribersByFilters={getSubscribersByFilters}
+            filterData={filterData}
+          />
+        </Suspense>
+        <TableContainer
+          component={Paper}
+          className='table-container'
+        >
+          {filterData?.abonType === 'resolution' ?
+            <Suspense fallback={<></>}><ResolutionsTable searchWord={searchWord}/></Suspense> :
+            <Suspense fallback={<></>}><SubscribersTable searchWord={searchWord}/></Suspense>}
+          {!!subscribers?.length && <Suspense fallback={<></>}>
+            <SubscribersFooter
+              paginationData={paginationData}
+              handlePaginationDataChange={handlePaginationDataChange}
+            />
+          </Suspense>}
+        </TableContainer>
       </Box>
-      <TableContainer
-        component={Paper}
-        className='table-container'
-      >
-        {
-          filterData?.abonType === 'resolution' ?
-            <ResolutionsTable searchWord={searchWord}/> :
-            <SubscribersTable searchWord={searchWord}/>
-        }
-        {!!subscribers?.length && <SubscribersFooter
-          paginationData={paginationData}
-          handlePaginationDataChange={handlePaginationDataChange}
-        />}
-      </TableContainer>
       <Snackbar
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'center'
         }}
-        open={snackBarOpen}
+        open={!!subscribersErrorMessage || !!resolutionsErrorMessage || !!filterDataErrorMessage}
         onClose={handleSnackBarClose}
-        message={subscribersErrorMessage || resolutionsErrorMessage || filterDataErrorMessage}
+        message={subscribersErrorMessage || resolutionsErrorMessage || filterDataErrorMessage || 'ㅤ'}
         sx={{
           '.MuiSnackbarContent-root': {
             backgroundColor: '#121212',
@@ -191,13 +165,6 @@ const Subscribers = () => {
           },
         }}
       />
-      <SubscribersFilterModal
-        open={filterModalOpen}
-        handleClose={handleFilterModalClose}
-        handleFilterDataChange={handleFilterDataChange}
-        getSubscribersByFilters={getSubscribersByFilters}
-        filterData={filterData}
-      ></SubscribersFilterModal>
     </div>
   );
 };
