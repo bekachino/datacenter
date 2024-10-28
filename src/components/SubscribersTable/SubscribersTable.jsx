@@ -27,10 +27,11 @@ const SubscribersTable = ({ searchWord }) => {
   
   return (
     <Table
+      stickyHeader
       sx={{
         minWidth: 650,
       }}
-      aria-label='simple table'
+      aria-label='sticky table'
     >
       <TableHead sx={{ position: 'relative' }}>
         {!!subscribersLoading && <LinearProgress

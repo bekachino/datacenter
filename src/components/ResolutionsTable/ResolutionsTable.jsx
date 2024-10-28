@@ -26,10 +26,11 @@ const ResolutionsTable = ({ searchWord }) => {
   
   return (
     <Table
+      stickyHeader
       sx={{
         minWidth: 650,
       }}
-      aria-label='simple table'
+      aria-label='sticky table'
     >
       <TableHead sx={{ position: 'relative' }}>
         {!!resolutionsLoading && <LinearProgress

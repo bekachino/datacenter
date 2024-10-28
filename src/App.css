@@ -1,5 +1,6 @@
 *, ::before {
   box-sizing: border-box;
+  overscroll-behavior: contain;
 }
 
 html {

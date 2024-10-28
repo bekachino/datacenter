@@ -7,7 +7,8 @@ import {
   getResolutions,
   getServiceEngineers,
   getSquares,
-  getSubscribers
+  getSubscribers,
+  getSubscribersStatistics
 } from "../../features/dataThunk";
 import Box from "@mui/material/Box";
 import {
@@ -16,6 +17,7 @@ import {
 import './subscribers.css';
 
 const SubscribersFilters = lazy(() => import('../../components/SubscribersFilterModal/SubscribersFilters'));
+const SubscribersStatisticsTable = lazy(() => import('../../components/SubscribersStatisticsTable/SubscribersStatisticsTable'));
 const SubscribersTable = lazy(() => import('../../components/SubscribersTable/SubscribersTable'));
 const ResolutionsTable = lazy(() => import('../../components/ResolutionsTable/ResolutionsTable'));
 const SubscribersFooter = lazy(() => import('../../components/SubscribersFooter/SubscribersFooter'));
@@ -113,8 +115,13 @@ const Subscribers = () => {
         end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
       }));
     } else {
-      await dispatch(getSubscribers({
+      dispatch(getSubscribers({
         ...paginationData, ...filterData,
+        start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+        end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
+      }));
+      await dispatch(getSubscribersStatistics({
+        ...filterData,
         start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
         end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
       }));
@@ -142,6 +149,12 @@ const Subscribers = () => {
             filterData={filterData}
           />
         </Suspense>
+        <TableContainer
+          component={Paper}
+          className='statistics-table-container'
+        >
+          <Suspense fallback={<></>}><SubscribersStatisticsTable/></Suspense>
+        </TableContainer>
         <TableContainer
           component={Paper}
           className='table-container'
