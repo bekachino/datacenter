@@ -3,12 +3,13 @@ import {
   getLocations, getRegions, getResolutions,
   getServiceEngineers,
   getSquares,
-  getSubscribers
+  getSubscribers, getSubscribersStatistics
 } from "./dataThunk";
 
 const initialState = {
   currentDrawer: '',
   subscribers: [],
+  subscribersStatistics: null,
   resolutions: [],
   regions: [],
   squares: [],
@@ -17,6 +18,7 @@ const initialState = {
   locationsWithNames: [],
   serviceEngineers: [],
   subscribersLoading: false,
+  subscribersStatisticsLoading: false,
   resolutionsLoading: false,
   regionsLoading: false,
   squaresLoading: false,
@@ -33,6 +35,12 @@ const DataSlice = createSlice({
   reducers: {
     setDrawer: (state, action) => {
       state.currentDrawer = action.payload;
+    },
+    clearSquares: state => {
+      state.squares = [];
+    },
+    clearLocations: state => {
+      state.locations = [];
     },
     clearErrorMessages: state => {
       state.subscribersErrorMessage = '';
@@ -53,6 +61,20 @@ const DataSlice = createSlice({
     });
     builder.addCase(getSubscribers.rejected, (state, { payload: error }) => {
       state.subscribersLoading = false;
+      state.subscribersErrorMesgage = error;
+    });
+    
+    builder.addCase(getSubscribersStatistics.pending, (state) => {
+      state.subscribersStatisticsLoading = true;
+      state.subscribersStatistics = null;
+      state.subscribersErrorMesgage = '';
+    });
+    builder.addCase(getSubscribersStatistics.fulfilled, (state, { payload: res }) => {
+      state.subscribersStatisticsLoading = false;
+      state.subscribersStatistics = res;
+    });
+    builder.addCase(getSubscribersStatistics.rejected, (state, { payload: error }) => {
+      state.subscribersStatisticsLoading = false;
       state.subscribersErrorMesgage = error;
     });
     
@@ -129,5 +151,8 @@ const DataSlice = createSlice({
 
 export const dataReducer = DataSlice.reducer;
 export const {
-  setDrawer, clearErrorMessages
+  setDrawer,
+  clearSquares,
+  clearLocations,
+  clearErrorMessages
 } = DataSlice.actions;

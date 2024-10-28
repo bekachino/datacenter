@@ -34,8 +34,37 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   }
 });
 
+
+export const getSubscribersStatistics = createAsyncThunk('data/getSubscribersStatistics', async ({
+  regions,
+  squares,
+  locations,
+  start_date,
+  end_date,
+  skip,
+  limit,
+}, { rejectWithValue }) => {
+  try {
+    const regionsQuery = regions?.length ? `&regions=${(
+      regions?.map(region => region?.label) || []
+    ).join('&region=')}` : '';
+    const squaresQuery = squares?.length ? `&squares_id=${(
+      squares?.map(squares_id => squares_id?.id) || []
+    ).join('&squares_id=')}` : '';
+    const locationsQuery = locations?.length ? `&addresses=${(
+      locations?.map(location => location?.label) || []
+    ).join('&addresses=')}` : '';
+    const startDate = !!start_date && !!end_date ? `&start_date=${dayjs(start_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
+    const endDate = !!start_date && !!end_date ? `&end_date=${dayjs(end_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
+    
+    const req = await axiosApi(`subscriber_base_statistics/?limit=999999${startDate}${endDate}${regionsQuery}${squaresQuery}${locationsQuery}`);
+    return await req.data || null;
+  } catch (e) {
+    return rejectWithValue('Ошибка при получении статистики');
+  }
+});
+
 export const getResolutions = createAsyncThunk('data/getResolutions', async ({
-  abonType = 'active',
   regions,
   squares,
   locations,

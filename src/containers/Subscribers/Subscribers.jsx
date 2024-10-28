@@ -1,8 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import {
-  Button, Paper, Snackbar, TableContainer, TextField
-} from "@mui/material";
+import { Paper, Snackbar, TableContainer, TextField } from "@mui/material";
 import {
   getLocations,
   getRegions,
@@ -12,7 +10,9 @@ import {
   getSubscribers
 } from "../../features/dataThunk";
 import Box from "@mui/material/Box";
-import { clearErrorMessages } from "../../features/dataSlice";
+import {
+  clearErrorMessages, clearLocations, clearSquares
+} from "../../features/dataSlice";
 import './subscribers.css';
 
 const SubscribersFilters = lazy(() => import('../../components/SubscribersFilterModal/SubscribersFilters'));
@@ -85,7 +85,11 @@ const Subscribers = () => {
           locations: [],
         }
       ));
-      dispatch(getSquares(value?.map(square => square?.id)));
+      
+      dispatch(clearSquares());
+      dispatch(clearLocations());
+      
+      if (value && value.length) dispatch(getSquares(value?.map(square => square?.id)));
     } else if (name === 'squares') {
       setFilterData(prevState => (
         {
@@ -93,7 +97,10 @@ const Subscribers = () => {
           locations: [],
         }
       ));
-      dispatch(getLocations(value?.map(location => location?.id)));
+      
+      dispatch(clearLocations());
+      
+      if (value && value.length) dispatch(getLocations(value?.map(location => location?.id)));
     }
   };
   
