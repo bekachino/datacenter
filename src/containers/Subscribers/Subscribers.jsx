@@ -120,11 +120,13 @@ const Subscribers = () => {
         start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
         end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
       }));
-      await dispatch(getSubscribersStatistics({
-        ...filterData,
-        start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
-        end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
-      }));
+      if (filterData?.abonType !== 'resolution') {
+        dispatch(getSubscribersStatistics({
+          ...filterData,
+          start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+          end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
+        }));
+      }
     }
   };
   

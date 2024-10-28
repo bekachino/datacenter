@@ -53,6 +53,7 @@ const DataSlice = createSlice({
       state.subscribersLoading = true;
       state.subscribers = [];
       state.resolutions = [];
+      state.subscribersStatistics = null;
       state.subscribersErrorMesgage = '';
     });
     builder.addCase(getSubscribers.fulfilled, (state, { payload: res }) => {
@@ -66,7 +67,6 @@ const DataSlice = createSlice({
     
     builder.addCase(getSubscribersStatistics.pending, (state) => {
       state.subscribersStatisticsLoading = true;
-      state.subscribersStatistics = null;
       state.subscribersErrorMesgage = '';
     });
     builder.addCase(getSubscribersStatistics.fulfilled, (state, { payload: res }) => {
@@ -82,6 +82,7 @@ const DataSlice = createSlice({
       state.resolutionsLoading = true;
       state.subscribers = [];
       state.resolutions = [];
+      state.subscribersStatistics = null;
       state.resolutionsErrorMesgage = '';
     });
     builder.addCase(getResolutions.fulfilled, (state, { payload: res }) => {
