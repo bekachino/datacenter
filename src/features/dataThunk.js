@@ -14,9 +14,15 @@ export const getSubscribers = createAsyncThunk('data/getSubscribers', async ({
   limit,
 }, { rejectWithValue }) => {
   try {
-    const regionsQuery = regions?.length ? `&regions=${regions?.map(region => region?.label)}` : '';
-    const squaresQuery = squares?.length ? `&squares_id=${squares?.map(squares_id => squares_id?.id)}` : '';
-    const locationsQuery = locations?.length ? `&addresses=${locations?.map(location => location?.label)}` : '';
+    const regionsQuery = regions?.length ? `&regions=${(
+      regions?.map(region => region?.label) || []
+    ).join('&region=')}` : '';
+    const squaresQuery = squares?.length ? `&squares_id=${(
+      squares?.map(squares_id => squares_id?.id) || []
+    ).join('&squares_id=')}` : '';
+    const locationsQuery = locations?.length ? `&addresses=${(
+      locations?.map(location => location?.label) || []
+    ).join('&addresses=')}` : '';
     const serviceEngineerQuery = service_engineers_id ? `&service_engineers_id=${service_engineers_id}` : '';
     const startDate = !!start_date && !!end_date ? `&start_date=${dayjs(start_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
     const endDate = !!start_date && !!end_date ? `&end_date=${dayjs(end_date, 'DD.MM.YYYY').format('YYYY-MM-DD')}` : '';
@@ -64,7 +70,9 @@ export const getRegions = createAsyncThunk('data/getRegions', async (_, { reject
 
 export const getSquares = createAsyncThunk('data/getSquares', async (ids, { rejectWithValue }) => {
   try {
-    const squares = await axiosApi(`regions_squares/?regions_id=${ids[0] || 0}`);
+    const squares = await axiosApi(`regions_squares/?regions_id=${(
+      ids || []
+    ).join('&regions_id=')}`);
     const squaresWithNames = await axiosApi(`squares/`);
     return [
       await squares.data,
@@ -77,7 +85,9 @@ export const getSquares = createAsyncThunk('data/getSquares', async (ids, { reje
 
 export const getLocations = createAsyncThunk('data/getLocations', async (ids, { rejectWithValue }) => {
   try {
-    const locations = await axiosApi(`squares_locations/?squares_id=${ids[0] || 0}`);
+    const locations = await axiosApi(`squares_locations/?squares_id=${(
+      ids || []
+    ).join('&squares_id=')}`);
     const locationsWithNames = await axiosApi(`locations/`);
     return [
       await locations.data,
