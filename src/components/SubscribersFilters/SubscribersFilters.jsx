@@ -256,6 +256,35 @@ const SubscribersFilters = ({
             })}
           />
         </Box>
+        <Box style={{ display: !!filterData?.regions?.length ? 'block' : 'none' }}>
+          <Typography variant='subtitle1'>
+            Выберите тип
+          </Typography>
+          <RadioGroup
+            className='abon-type-radio-group'
+            row
+            aria-labelledby='demo-row-radio-buttons-group-label'
+            name='row-radio-buttons-group'
+            onChange={(_, value) => handleFilterDataChange({
+              target: {
+                name: 'dataType',
+                value
+              }
+            })}
+            value={filterData.dataType}
+          >
+            <FormControlLabel
+              value='personal'
+              control={<Radio color='success'/>}
+              label='Персонализирование'
+            />
+            <FormControlLabel
+              value='group'
+              control={<Radio color='info'/>}
+              label='Групповые'
+            />
+          </RadioGroup>
+        </Box>
         <LoadingButton
           type='submit'
           variant='contained'

@@ -16,7 +16,7 @@ import {
 } from "../../features/dataSlice";
 import './subscribers.css';
 
-const SubscribersFilters = lazy(() => import('../../components/SubscribersFilterModal/SubscribersFilters'));
+const SubscribersFilters = lazy(() => import('../../components/SubscribersFilters/SubscribersFilters'));
 const SubscribersStatisticsTable = lazy(() => import('../../components/SubscribersStatisticsTable/SubscribersStatisticsTable'));
 const SubscribersTable = lazy(() => import('../../components/SubscribersTable/SubscribersTable'));
 const ResolutionsTable = lazy(() => import('../../components/ResolutionsTable/ResolutionsTable'));
@@ -37,6 +37,7 @@ const Subscribers = () => {
   });
   const [filterData, setFilterData] = useState({
     abonType: 'active',
+    dataType: 'personal',
   });
   
   useEffect(() => {
