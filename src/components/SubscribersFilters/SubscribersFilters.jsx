@@ -276,7 +276,7 @@ const SubscribersFilters = ({
             <FormControlLabel
               value='personal'
               control={<Radio color='success'/>}
-              label='Персонализирование'
+              label='Персональные'
             />
             <FormControlLabel
               value='group'

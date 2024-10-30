@@ -15,6 +15,7 @@ import {
   clearErrorMessages, clearLocations, clearSquares
 } from "../../features/dataSlice";
 import './subscribers.css';
+import Typography from "@mui/material/Typography";
 
 const SubscribersFilters = lazy(() => import('../../components/SubscribersFilters/SubscribersFilters'));
 const SubscribersStatisticsTable = lazy(() => import('../../components/SubscribersStatisticsTable/SubscribersStatisticsTable'));
@@ -152,26 +153,35 @@ const Subscribers = () => {
             filterData={filterData}
           />
         </Suspense>
-        <TableContainer
-          component={Paper}
-          className='statistics-table-container'
-        >
-          <Suspense fallback={<></>}><SubscribersStatisticsTable/></Suspense>
-        </TableContainer>
-        <TableContainer
-          component={Paper}
-          className='table-container'
-        >
-          {filterData?.abonType === 'resolution' ?
-            <Suspense fallback={<></>}><ResolutionsTable searchWord={searchWord}/></Suspense> :
-            <Suspense fallback={<></>}><SubscribersTable searchWord={searchWord}/></Suspense>}
-          {!!subscribers?.length && <Suspense fallback={<></>}>
-            <SubscribersFooter
-              paginationData={paginationData}
-              handlePaginationDataChange={handlePaginationDataChange}
-            />
-          </Suspense>}
-        </TableContainer>
+        <Box className='statistics-table-container-wrapper'>
+          <Typography
+            className='table-container-title'
+            variant='h5'
+            component='h5'
+          >Аналитика персональных данных</Typography>
+          <TableContainer
+            component={Paper}
+            className='statistics-table-container'
+          >
+            <Suspense fallback={<></>}><SubscribersStatisticsTable/></Suspense>
+          </TableContainer>
+        </Box>
+        <Box className='table-container-wrapper'>
+          <TableContainer
+            component={Paper}
+            className='table-container'
+          >
+            {filterData?.abonType === 'resolution' ?
+              <Suspense fallback={<></>}><ResolutionsTable searchWord={searchWord}/></Suspense> :
+              <Suspense fallback={<></>}><SubscribersTable searchWord={searchWord}/></Suspense>}
+            {!!subscribers?.length && <Suspense fallback={<></>}>
+              <SubscribersFooter
+                paginationData={paginationData}
+                handlePaginationDataChange={handlePaginationDataChange}
+              />
+            </Suspense>}
+          </TableContainer>
+        </Box>
       </Box>
       <Snackbar
         anchorOrigin={{
