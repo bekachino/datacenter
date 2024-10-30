@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Paper, Snackbar, TableContainer, TextField } from "@mui/material";
 import {
+  getGroupedSubscribersData,
   getLocations,
   getRegions,
   getResolutions,
@@ -21,6 +22,7 @@ const SubscribersFilters = lazy(() => import('../../components/SubscribersFilter
 const SubscribersStatisticsTable = lazy(() => import('../../components/SubscribersStatisticsTable/SubscribersStatisticsTable'));
 const SubscribersTable = lazy(() => import('../../components/SubscribersTable/SubscribersTable'));
 const ResolutionsTable = lazy(() => import('../../components/ResolutionsTable/ResolutionsTable'));
+const SubscribersGroupDataTable = lazy(() => import('../../components/SubscribersGroupDataTable/SubscribersGroupDataTable'));
 const SubscribersFooter = lazy(() => import('../../components/SubscribersFooter/SubscribersFooter'));
 
 const Subscribers = () => {
@@ -110,25 +112,33 @@ const Subscribers = () => {
   
   const getSubscribersByFilters = async (e) => {
     e?.preventDefault();
-    if (filterData?.abonType === 'resolution') {
-      await dispatch(getResolutions({
-        ...paginationData, ...filterData,
-        start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
-        end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
-      }));
-    } else {
-      dispatch(getSubscribers({
-        ...paginationData, ...filterData,
-        start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
-        end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
-      }));
-      if (filterData?.abonType !== 'resolution') {
-        dispatch(getSubscribersStatistics({
-          ...filterData,
+    if (filterData.dataType === 'personal') {
+      if (filterData?.abonType === 'resolution') {
+        dispatch(getResolutions({
+          ...paginationData, ...filterData,
           start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
           end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
         }));
+      } else {
+        dispatch(getSubscribers({
+          ...paginationData, ...filterData,
+          start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+          end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
+        }));
+        if (filterData?.abonType !== 'resolution') {
+          dispatch(getSubscribersStatistics({
+            ...filterData,
+            start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+            end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
+          }));
+        }
       }
+    } else {
+      dispatch(getGroupedSubscribersData({
+        ...filterData,
+        start_date: 'startEndRange' in filterData ? filterData.startEndRange[0] : null,
+        end_date: 'startEndRange' in filterData ? filterData.startEndRange[1] : null,
+      }));
     }
   };
   
@@ -153,27 +163,29 @@ const Subscribers = () => {
             filterData={filterData}
           />
         </Suspense>
-        <Box className='statistics-table-container-wrapper'>
-          <Typography
-            className='table-container-title'
-            variant='h5'
-            component='h5'
-          >Аналитика персональных данных</Typography>
-          <TableContainer
-            component={Paper}
-            className='statistics-table-container'
-          >
-            <Suspense fallback={<></>}><SubscribersStatisticsTable/></Suspense>
-          </TableContainer>
-        </Box>
+        {filterData.dataType === 'personal' && filterData.abonType !== 'resolution' &&
+          <Box className='statistics-table-container-wrapper'>
+            <Typography
+              className='table-container-title'
+              variant='h5'
+              component='h5'
+            >Аналитика персональных данных</Typography>
+            <TableContainer
+              component={Paper}
+              className='statistics-table-container'
+            >
+              <Suspense fallback={<></>}><SubscribersStatisticsTable/></Suspense>
+            </TableContainer>
+          </Box>}
         <Box className='table-container-wrapper'>
           <TableContainer
             component={Paper}
             className='table-container'
           >
-            {filterData?.abonType === 'resolution' ?
-              <Suspense fallback={<></>}><ResolutionsTable searchWord={searchWord}/></Suspense> :
-              <Suspense fallback={<></>}><SubscribersTable searchWord={searchWord}/></Suspense>}
+            {filterData.dataType === 'personal' ? filterData?.abonType === 'resolution' ?
+                <Suspense fallback={<></>}><ResolutionsTable searchWord={searchWord}/></Suspense> :
+                <Suspense fallback={<></>}><SubscribersTable searchWord={searchWord}/></Suspense> :
+              <SubscribersGroupDataTable/>}
             {!!subscribers?.length && <Suspense fallback={<></>}>
               <SubscribersFooter
                 paginationData={paginationData}

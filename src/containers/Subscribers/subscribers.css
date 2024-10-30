@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   padding: 15px 10px 0;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .subscribers-tabs button {
@@ -50,9 +52,6 @@
   font-weight: bold;
   text-align: center;
   padding: 8px 10px 0;
-  white-space: nowrap;
-  overflow: scroll;
-  text-overflow: ellipsis;
   width: 100%;
 }
 
@@ -63,20 +62,24 @@
 
 @media (min-width: 720px) {
   .subscribers-table-wrapper {
-    grid-template-columns: minmax(350px, 380px) 1fr;
+    grid-template-columns: minmax(350px, 400px) 1fr;
   }
   
   .subscribers-table-wrapper form {
     grid-column: 1 / 2;
   }
   
-  .statistics-table-container-wrapper {
-    grid-column: 2 / 3;
+  .search-application {
+    grid-column: 1 / -1;
   }
   
-  .search-application,
   .table-container-wrapper {
-    grid-column: 1 / -1;
+    grid-column: span 2;
+  }
+  
+  .subscribers:not(:has(.statistics-table-container-wrapper)) .table-container-wrapper,
+  .subscribers:not(:has(.statistics-table-container-wrapper)) .subscribers-filters {
+    grid-column: span 2;
   }
 }
 
@@ -104,5 +107,9 @@
   
   .table-container-wrapper {
     max-width: calc(100vw - 20px);
+  }
+  
+  .subscribers-table-wrapper:not(:has(.statistics-table-container-wrapper)) {
+    grid-template-rows: 1fr auto auto 600px;
   }
 }

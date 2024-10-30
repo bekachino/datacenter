@@ -160,6 +160,6 @@ export const getGroupedSubscribersData = createAsyncThunk('data/getGroupedSubscr
     const req = await axiosApi(`subscriber_base_test/?limit=999999${startDate}${endDate}${regionsQuery}${squaresQuery}${locationsQuery}`);
     return await req.data || null;
   } catch (e) {
-    return rejectWithValue('Ошибка при получении статистики');
+    return rejectWithValue('Ошибка при получении групповых данных');
   }
 });

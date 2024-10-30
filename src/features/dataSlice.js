@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  getGroupedSubscribersData,
   getLocations, getRegions, getResolutions,
   getServiceEngineers,
   getSquares,
@@ -17,6 +18,7 @@ const initialState = {
   locations: [],
   locationsWithNames: [],
   serviceEngineers: [],
+  groupedSubscribersData: [],
   subscribersLoading: false,
   subscribersStatisticsLoading: false,
   resolutionsLoading: false,
@@ -24,6 +26,7 @@ const initialState = {
   squaresLoading: false,
   locationsLoading: false,
   serviceEngineersLoading: false,
+  groupedSubscribersDataLoading: false,
   subscribersErrorMessage: '',
   resolutionsErrorMessage: '',
   filterDataErrorMessage: '',
@@ -146,6 +149,20 @@ const DataSlice = createSlice({
     builder.addCase(getServiceEngineers.rejected, (state, { payload: error }) => {
       state.serviceEngineersLoading = false;
       state.filterDataErrorMessage = error;
+    });
+    
+    builder.addCase(getGroupedSubscribersData.pending, (state) => {
+      state.groupedSubscribersDataLoading = true;
+      state.groupedSubscribersData = [];
+      state.subscribersErrorMesgage = '';
+    });
+    builder.addCase(getGroupedSubscribersData.fulfilled, (state, { payload: res }) => {
+      state.groupedSubscribersDataLoading = false;
+      state.groupedSubscribersData = res;
+    });
+    builder.addCase(getGroupedSubscribersData.rejected, (state, { payload: error }) => {
+      state.groupedSubscribersDataLoading = false;
+      state.subscribersErrorMesgage = error;
     });
   },
 });
